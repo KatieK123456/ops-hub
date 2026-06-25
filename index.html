@@ -1,0 +1,2125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ops Hub</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;0,6..72,600;0,6..72,700;1,6..72,400&display=swap" rel="stylesheet">
+<style>
+:root{
+ --bg:#F0F4F9;
+ --surface:#FFFFFF;
+ --surface2:#F7F9FC;
+ --border:#DDE3ED;
+ --border2:#C4CDD9;
+ --text:#0F1E3C;
+ --text2:#4A5568;
+ --text3:#8A96A8;
+ --navy:#0F1E3C;
+ --navy-mid:#1E3A5F;
+ --accent:#2563EB;
+ --accent-light:#EBF2FF;
+ --accent-mid:#93B4F8;
+ --purple:#2563EB;--purple-light:#EBF2FF;--purple-mid:#93B4F8;
+ --green:#0D7A4E;--green-light:#E6F7F0;
+ --amber:#B45309;--amber-light:#FEF3C7;
+ --red:#B91C1C;--red-light:#FEE2E2;
+ --blue:#1D4ED8;--blue-light:#DBEAFE;
+ --teal:#0D7A4E;--teal-light:#E6F7F0;
+ --radius:8px;--radius-sm:5px;
+ --shadow:0 1px 3px rgba(15,30,60,.07),0 1px 2px rgba(15,30,60,.04);
+ --shadow-md:0 4px 16px rgba(15,30,60,.10);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Newsreader',serif;background:var(--bg);color:var(--text);font-size:14px;min-height:100vh;-webkit-font-smoothing:antialiased}
+#login-screen{display:flex;align-items:center;justify-content:center;min-height:100vh}
+.login-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:2.5rem;width:380px;box-shadow:0 8px 32px rgba(15,30,60,.12)}
+.login-card h1{font-size:28px;font-weight:400;margin-bottom:4px;color:var(--navy);font-family:'DM Serif Display',serif;letter-spacing:-.4px}
+.login-card p{color:var(--text3);font-size:13px;margin-bottom:2rem}
+.lbl{font-size:12px;font-weight:500;color:var(--text2);margin-bottom:6px;display:block;text-transform:uppercase;letter-spacing:.05em}
+.lsel{width:100%;padding:10px 12px;border:1px solid var(--border2);border-radius:var(--radius-sm);font-family:'Newsreader',serif;font-size:14px;background:var(--surface);color:var(--text);margin-bottom:1rem;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%234A5568' d='M6 8L1 3h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center}
+.lsel:focus{outline:2px solid var(--purple);outline-offset:2px}
+.btn-primary{width:100%;padding:11px;background:var(--accent);color:#fff;border:none;border-radius:var(--radius-sm);font-family:inherit;font-size:14px;font-weight:600;cursor:pointer;transition:all .15s;letter-spacing:.01em}
+.btn-primary:hover{opacity:.88}
+#app{display:none;min-height:100vh}
+.topbar{background:var(--navy);border-bottom:none;padding:0 1.5rem;height:56px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:0 2px 8px rgba(15,30,60,.18)}
+.topbar-left{display:flex;align-items:center;gap:12px}
+.topbar-logo{font-weight:700;font-size:17px;color:#FFFFFF;font-family:'DM Serif Display',serif;letter-spacing:-.2px}
+.trole{font-size:11px;padding:2px 8px;border-radius:20px;font-weight:500}
+.role-manager{background:rgba(37,99,235,.25);color:#93B4F8}
+.role-employee{background:rgba(13,122,78,.25);color:#6EE7B7}
+.tuser{font-size:13px;color:rgba(255,255,255,.7)}
+.btn-logout{font-size:12px;padding:5px 12px;border:1px solid rgba(255,255,255,.2);border-radius:var(--radius-sm);background:none;cursor:pointer;font-family:inherit;color:rgba(255,255,255,.7)}
+.btn-logout:hover{background:rgba(255,255,255,.1);color:#fff}
+.app-body{display:flex;min-height:calc(100vh - 56px)}
+.sidebar{width:216px;background:var(--navy-mid);border-right:none;padding:1rem 0;flex-shrink:0;position:sticky;top:56px;height:calc(100vh - 56px);overflow-y:auto}
+.nav-item{display:flex;align-items:center;gap:9px;padding:9px 1rem;cursor:pointer;color:rgba(255,255,255,.6);font-size:13px;font-weight:500;border-left:3px solid transparent;transition:all .12s;user-select:none;letter-spacing:.01em}
+.nav-item:hover{color:#fff;background:rgba(255,255,255,.08)}
+.nav-group-label{font-size:10px;font-weight:700;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:.1em;padding:14px 1rem 4px;margin-top:4px}
+.search-bar-wrap{flex:1;max-width:360px;position:relative}
+.search-bar{width:100%;padding:7px 12px 7px 34px;border:1px solid rgba(255,255,255,.15);border-radius:var(--radius-sm);background:rgba(255,255,255,.1);color:#fff;font-family:'Newsreader',serif;font-size:13px}
+.search-bar::placeholder{color:rgba(255,255,255,.4)}
+.search-bar:focus{outline:none;background:rgba(255,255,255,.18);border-color:rgba(255,255,255,.3)}
+.search-icon{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:rgba(255,255,255,.4);font-size:13px;pointer-events:none}
+.search-results{position:absolute;top:calc(100% + 6px);left:0;right:0;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow-md);z-index:200;max-height:340px;overflow-y:auto;display:none}
+.search-results.open{display:block}
+.search-result-item{padding:9px 14px;cursor:pointer;border-bottom:1px solid var(--border);font-size:13px}
+.search-result-item:last-child{border-bottom:none}
+.search-result-item:hover{background:var(--surface2)}
+.search-result-type{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);margin-bottom:2px}
+.search-result-title{color:var(--navy);font-weight:500}
+.search-no-results{padding:14px;color:var(--text3);font-size:13px;text-align:center}
+.digest-section{margin-bottom:1.5rem}
+.digest-section-title{font-size:15px;font-weight:400;font-family:'DM Serif Display',serif;color:var(--navy);margin-bottom:.75rem;padding-bottom:6px;border-bottom:1px solid var(--border)}
+.week-task-row{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(--border);font-size:13px}
+.week-task-row:last-child{border-bottom:none}
+.action-item-row{display:flex;align-items:flex-start;gap:8px;padding:6px 0;border-bottom:1px solid var(--border);font-size:13px}
+.action-item-row:last-child{border-bottom:none}
+.action-check{width:16px;height:16px;border-radius:3px;border:2px solid var(--border2);flex-shrink:0;margin-top:1px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.action-check.done{background:var(--green);border-color:var(--green);color:#fff}
+.template-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1rem 1.25rem;margin-bottom:10px;box-shadow:var(--shadow)}
+.template-task-row{display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--border);font-size:13px;color:var(--text2)}
+.template-task-row:last-child{border-bottom:none}
+.nav-item.active{color:#fff;background:rgba(37,99,235,.35);border-left:3px solid #60A5FA;font-weight:600}
+.nav-icon{font-size:15px;width:18px;text-align:center}
+.content{flex:1;padding:1.5rem;max-width:1080px}
+.btn-action{padding:8px 16px;background:var(--accent);color:#fff;border:none;border-radius:var(--radius-sm);font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:6px;letter-spacing:.01em}
+.btn-action:hover{background:#1D4ED8}
+.btn-sm{padding:5px 12px;font-size:12px;border-radius:var(--radius-sm);border:1px solid var(--border2);background:var(--surface);cursor:pointer;font-family:inherit;font-weight:500;color:var(--navy);transition:all .15s;letter-spacing:.01em}
+.btn-sm:hover{background:var(--bg)}
+.btn-sm.danger{color:var(--red);border-color:#F0B8B4}.btn-sm.danger:hover{background:var(--red-light)}
+.btn-sm.success{color:var(--green);border-color:#9ED4BC}.btn-sm.success:hover{background:var(--green-light)}
+.btn-sm.purple{color:var(--accent);border-color:var(--accent-mid)}.btn-sm.purple:hover{background:var(--accent-light)}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1rem 1.25rem;margin-bottom:10px;box-shadow:0 1px 4px rgba(15,30,60,.06)}
+.card.flagged-card{border-left:3px solid var(--amber);background:#FFFDF8}
+.card.done-card{opacity:.6}
+.card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.card-info{flex:1}
+.task-title{font-weight:400;font-size:15px;margin-bottom:4px;color:var(--navy);font-family:'DM Serif Display',serif}
+.task-meta{font-size:12px;color:var(--text2);display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:4px}
+.task-note{font-size:13px;color:var(--text2);background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:8px 10px;margin-top:8px;font-style:italic}
+.task-note strong{color:var(--amber);font-style:normal}
+.card-actions{display:flex;gap:6px;flex-shrink:0;flex-wrap:wrap}
+.badge{font-size:11px;padding:2px 8px;border-radius:20px;font-weight:500;white-space:nowrap}
+.badge-todo{background:#EFF6FF;color:#1D4ED8}
+.badge-inprogress{background:#EBF2FF;color:#2563EB}
+.badge-flagged{background:#FEF3C7;color:#92400E}
+.badge-done{background:#ECFDF5;color:#065F46}
+.badge-planning{background:#EBF2FF;color:#1E40AF}
+.badge-active{background:#ECFDF5;color:#065F46}
+.badge-review{background:#FEF3C7;color:#92400E}
+.badge-blocked{background:#FEE2E2;color:#991B1B}
+.stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin-bottom:1.5rem}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1rem 1.25rem;text-align:center;box-shadow:0 1px 4px rgba(15,30,60,.06)}
+.stat-num{font-size:26px;font-weight:400;letter-spacing:-.3px;font-family:'DM Serif Display',serif}
+.stat-label{font-size:11px;color:var(--text3);margin-top:3px;font-weight:500;text-transform:uppercase;letter-spacing:.04em}
+.section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;flex-wrap:wrap;gap:8px}
+.section-title{font-size:19px;font-weight:400;color:var(--navy);letter-spacing:-.2px;font-family:'DM Serif Display',serif}
+.filter-row{display:flex;gap:6px;margin-bottom:1rem;flex-wrap:wrap}
+.filter-btn{font-size:12px;padding:5px 14px;border-radius:20px;border:1px solid var(--border2);background:var(--surface);cursor:pointer;color:var(--text2);font-family:inherit;font-weight:500;transition:all .12s;letter-spacing:.01em}
+.filter-btn:hover{background:var(--bg)}
+.filter-btn.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+.employee-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:12px}
+.emp-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem;box-shadow:0 1px 4px rgba(15,30,60,.06)}
+.emp-header{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.avatar{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:600;font-size:13px;flex-shrink:0}
+.av-0{background:#EAE8FA;color:var(--purple)}.av-1{background:#E3F4EC;color:var(--green)}
+.av-2{background:#FDF0DC;color:var(--amber)}.av-3{background:#E4EEF9;color:var(--blue)}
+.av-4{background:#FCECEA;color:var(--red)}
+.emp-name{font-weight:400;font-size:15px;color:var(--navy);font-family:'DM Serif Display',serif}
+.emp-stats{font-size:12px;color:var(--text2)}
+.emp-tasks{display:flex;flex-direction:column;gap:6px}
+.emp-task-row{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:var(--radius-sm);background:var(--surface2);border:1px solid var(--border);font-size:13px}
+.emp-task-row.flagged-row{background:var(--amber-light);border-color:#E8C880}
+.emp-task-name{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.empty-state{color:var(--text3);font-size:13px;text-align:center;padding:1.5rem 0}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:200;align-items:center;justify-content:center}
+.modal-overlay.open{display:flex}
+.modal{background:var(--surface);border-radius:12px;padding:1.75rem;width:520px;max-width:95vw;box-shadow:0 8px 40px rgba(15,30,60,.16);max-height:90vh;overflow-y:auto}
+.modal h2{font-size:18px;font-weight:400;margin-bottom:1.25rem;color:var(--navy);letter-spacing:-.2px;font-family:'DM Serif Display',serif}
+.fg{margin-bottom:1rem}
+.fl{font-size:12px;font-weight:500;color:var(--text2);display:block;margin-bottom:5px;text-transform:uppercase;letter-spacing:.04em}
+.fi,.fs,.ft{width:100%;padding:9px 12px;border:1px solid var(--border2);border-radius:var(--radius-sm);font-family:inherit;font-size:14px;color:var(--text);background:var(--surface)}
+.fi:focus,.fs:focus,.ft:focus{outline:2px solid var(--purple);outline-offset:2px}
+.ft{resize:vertical;min-height:72px}
+.modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:1.25rem}
+.btn-cancel{padding:9px 18px;border:1px solid var(--border2);border-radius:var(--radius-sm);background:none;font-family:inherit;font-size:13px;cursor:pointer;color:var(--text2)}
+.btn-cancel:hover{background:var(--bg)}
+.btn-save{padding:9px 18px;background:var(--accent);color:#fff;border:none;border-radius:var(--radius-sm);font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;letter-spacing:.01em}
+.btn-save:hover{background:#1D4ED8}
+.tag-pill{display:inline-block;font-size:11px;padding:2px 8px;border-radius:20px;background:var(--bg);border:1px solid var(--border);color:var(--text2);margin-right:4px}
+.sub-label{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;font-weight:700;margin-bottom:8px}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.handoff-alert{background:#FEF3C7;border:1px solid #F59E0B;border-radius:var(--radius);padding:10px 14px;margin-bottom:1rem;display:flex;align-items:center;gap:10px;font-size:13px;color:#92400E;font-weight:600}
+/* Projects */
+.pb-table{width:100%;border-collapse:collapse;font-size:13px}
+.pb-table th{font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;padding:10px 12px;text-align:left;border-bottom:2px solid var(--border);background:#F7F9FC;white-space:nowrap}
+.pb-table td{padding:10px 12px;border-bottom:1px solid var(--border);vertical-align:top}
+.pb-table tr:last-child td{border-bottom:none}
+.pb-table tr:hover td{background:var(--surface2)}
+.pb-row-expand{cursor:pointer}
+.pb-name{font-weight:400;font-size:14px;margin-bottom:2px;color:var(--navy);font-family:'DM Serif Display',serif}
+.pb-notes{font-size:11px;color:var(--text3);margin-top:2px}
+.weight-pip{width:10px;height:10px;border-radius:2px;display:inline-block;margin-right:2px}
+.weight-bar{display:flex;align-items:center;gap:3px}
+.timeline-cell{font-size:12px;line-height:1.7}
+.timeline-on{color:var(--green);font-weight:500}
+.timeline-risk{color:var(--amber);font-weight:500}
+.timeline-late{color:var(--red);font-weight:500}
+.timeline-done{color:var(--teal);font-weight:500}
+.member-chip{display:inline-flex;align-items:center;gap:4px;font-size:11px;padding:2px 8px;border-radius:20px;background:var(--accent-light);color:var(--accent);font-weight:600;margin:2px 2px 2px 0;letter-spacing:.01em}
+/* Expanded project panel */
+.proj-panel{background:var(--surface2);border-top:1px solid var(--border);padding:1rem 1.25rem}
+.proj-panel-tabs{display:flex;gap:4px;margin-bottom:1rem}
+.ppt{padding:6px 14px;border-radius:20px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid var(--border2);background:var(--surface);color:var(--text2);font-family:inherit;letter-spacing:.01em}
+.ppt.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+.chat-feed{display:flex;flex-direction:column;gap:8px;max-height:260px;overflow-y:auto;margin-bottom:10px;padding-right:4px}
+.chat-msg{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:8px 12px}
+.chat-msg-header{display:flex;justify-content:space-between;margin-bottom:3px}
+.chat-msg-author{font-weight:400;font-size:13px;color:var(--navy);font-family:'DM Serif Display',serif}
+.chat-msg-ts{font-size:11px;color:var(--text3)}
+.chat-msg-text{font-size:13px;color:var(--text2)}
+.chat-input-row{display:flex;gap:8px}
+.chat-input{flex:1;padding:8px 12px;border:1px solid var(--border2);border-radius:var(--radius-sm);font-family:inherit;font-size:13px;background:var(--surface)}
+.chat-input:focus{outline:2px solid var(--purple);outline-offset:2px}
+.attach-list{display:flex;flex-direction:column;gap:6px;margin-bottom:10px}
+.attach-item{display:flex;align-items:center;gap:8px;padding:7px 10px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);font-size:13px}
+.attach-name{flex:1;font-weight:500}
+.attach-size{font-size:11px;color:var(--text3)}
+.attach-drop{border:2px dashed var(--border2);border-radius:var(--radius-sm);padding:1.5rem;text-align:center;color:var(--text3);font-size:13px;cursor:pointer;transition:all .15s}
+.attach-drop:hover{border-color:var(--purple);color:var(--purple);background:var(--purple-light)}
+/* Meetings */
+.meeting-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1rem 1.25rem;margin-bottom:10px;box-shadow:var(--shadow)}
+.meeting-card.proj-linked{border-left:3px solid var(--purple)}
+.meeting-title{font-weight:400;font-size:15px;margin-bottom:3px;font-family:'DM Serif Display',serif;color:var(--navy)}
+.meeting-meta{font-size:12px;color:var(--text2);margin-bottom:6px;display:flex;gap:10px;flex-wrap:wrap}
+.meeting-tags{display:flex;gap:4px;flex-wrap:wrap}
+.mtag{font-size:11px;padding:2px 8px;border-radius:20px;background:var(--bg);border:1px solid var(--border);color:var(--text2)}
+.proj-badge{font-size:11px;padding:2px 8px;border-radius:20px;background:var(--purple-light);color:var(--purple);font-weight:500}
+/* Productivity */
+.prod-person-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem;margin-bottom:12px;box-shadow:0 1px 4px rgba(15,30,60,.06)}
+.prod-header{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.prod-rate-row{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.prod-rate-bar{flex:1;height:8px;background:var(--border);border-radius:4px}
+.prod-rate-fill{height:100%;border-radius:4px;transition:width .4s}
+.prod-rate-pct{font-size:15px;font-weight:600;min-width:42px;text-align:right}
+.task-log-table{width:100%;border-collapse:collapse;font-size:13px;margin-top:8px}
+.task-log-table th{font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.04em;padding:4px 8px;text-align:left;border-bottom:1px solid var(--border)}
+.task-log-table td{padding:6px 8px;border-bottom:1px solid var(--border)}
+.task-log-table tr:last-child td{border-bottom:none}
+.task-type-mgr-row{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px}
+.task-type-mgr-row:last-child{border-bottom:none}
+.inline-row{display:flex;gap:8px;align-items:flex-end}
+.inline-row .fg{margin-bottom:0;flex:1}
+@media(max-width:700px){.sidebar{display:none}.content{padding:1rem}.two-col{grid-template-columns:1fr}.proj-row{grid-template-columns:1fr 80px}}
+
+.proj-link-badge{font-size:11px;padding:2px 8px;border-radius:20px;background:var(--accent-light);color:var(--accent);font-weight:600;cursor:pointer;white-space:nowrap;flex-shrink:0;letter-spacing:.01em}
+.proj-link-badge:hover{opacity:.8}
+.proj-link-badge.no-proj{background:var(--surface2);color:var(--text3);cursor:default}
+.task-row-proj{padding:10px 0;border-bottom:1px solid var(--border)}
+.task-row-proj:last-child{border-bottom:none}
+/* Intake */
+.intake-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1rem 1.25rem;margin-bottom:10px;box-shadow:var(--shadow)}
+.intake-card.priority-high{border-left:4px solid #EF4444}
+.intake-card.priority-medium{border-left:4px solid #F59E0B}
+.intake-card.priority-low{border-left:4px solid #10B981}
+.intake-meta{font-size:12px;color:var(--text2);display:flex;gap:12px;flex-wrap:wrap;margin:5px 0 8px}
+.intake-actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px;padding-top:10px;border-top:1px solid var(--border)}
+.status-pill-approved{font-size:11px;padding:2px 8px;border-radius:20px;background:var(--green-light);color:var(--green);font-weight:500}
+.status-pill-declined{font-size:11px;padding:2px 8px;border-radius:20px;background:var(--red-light);color:var(--red);font-weight:500}
+.status-pill-pending{font-size:11px;padding:2px 8px;border-radius:20px;background:var(--amber-light);color:var(--amber);font-weight:500}
+.form-page{min-height:100vh;background:var(--bg);display:flex;align-items:center;justify-content:center;padding:2rem}
+.form-page-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:2rem;width:520px;max-width:95vw;box-shadow:0 8px 32px rgba(15,30,60,.12)}
+/* ── KANBAN ── */
+.kanban-board{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;align-items:start}
+.kanban-col{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:10px;min-height:440px;transition:background .15s;min-width:0;overflow:hidden}
+.kanban-col.drag-over{background:var(--purple-light);border-color:var(--purple-mid)}
+.kanban-col-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;padding:0 2px}
+.kanban-col-title{font-size:12px;font-weight:700;display:flex;align-items:center;gap:7px;text-transform:uppercase;letter-spacing:.06em;color:var(--navy)}
+.kanban-count{font-size:11px;background:var(--border);color:var(--text2);border-radius:20px;padding:1px 7px;font-weight:700}
+.kanban-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 12px;margin-bottom:8px;cursor:grab;box-shadow:var(--shadow);transition:box-shadow .15s,transform .1s;user-select:none;min-width:0;word-break:break-word}
+.kanban-card:active{cursor:grabbing;box-shadow:var(--shadow-md)}
+.kanban-card.dragging{opacity:.35;transform:rotate(1.5deg) scale(1.02);box-shadow:var(--shadow-md)}
+.kanban-card-title{font-size:14px;font-weight:400;margin-bottom:5px;line-height:1.4;font-family:'DM Serif Display',serif;color:var(--navy)}
+.kanban-stat-chip{font-size:11px;padding:2px 7px;border-radius:20px;background:var(--surface2);border:1px solid var(--border);color:var(--text2)}
+.kanban-empty{text-align:center;color:var(--text3);font-size:12px;padding:2.5rem 0;border:2px dashed var(--border);border-radius:var(--radius-sm)}
+.kanban-add-btn{width:100%;padding:7px;border:1px dashed var(--border2);border-radius:var(--radius-sm);background:none;color:var(--text3);font-family:inherit;font-size:12px;cursor:pointer;margin-top:6px;transition:all .12s}
+.kanban-add-btn:hover{background:var(--surface);color:var(--text2);border-style:solid}
+@media(max-width:1100px){.kanban-board{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:700px){.kanban-board{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:480px){.kanban-board{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen">
+ <div class="login-card">
+ <h1>Ops Hub</h1>
+ <p>Enterprise Operations Team</p>
+ <label class="lbl">Sign in as</label>
+ <select class="lsel" id="login-user">
+ <option value="">Select your name...</option>
+ <option value="manager|Sarah Chen">Sarah Chen — Manager</option>
+ <option value="employee|Megan R.">Megan R. — Business Analyst</option>
+ <option value="employee|Sonya M.">Sonya M. — BA / UAT Lead</option>
+ <option value="employee|Jordan K.">Jordan K. — Ops Analyst</option>
+ <option value="employee|Chris B.">Chris B. — Billing BA</option>
+ </select>
+ <button class="btn-primary" onclick="login()">Sign In</button>
+ </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+ <div class="topbar">
+ <div class="topbar-left">
+ <span class="topbar-logo">Ops Hub</span>
+ <span class="trole" id="role-badge"></span>
+ </div>
+ <div style="display:flex;align-items:center;gap:12px">
+ <span class="tuser" id="topbar-username"></span>
+ <button class="btn-logout" onclick="logout()">Sign out</button>
+ </div>
+ </div>
+ <div class="app-body">
+ <div class="sidebar" id="sidebar"></div>
+ <div class="content" id="main-content"></div>
+ </div>
+</div>
+
+<!-- ══ MODALS ══════════════════════════════════════════════ -->
+
+<div class="modal-overlay" id="template-modal">
+  <div class="modal">
+    <h2>New onboarding template</h2>
+    <div class="fg"><label class="fl">Template name</label><input class="fi" id="tmpl-name" placeholder="e.g. New BA Onboarding"></div>
+    <div class="fg"><label class="fl">Tasks <span style="font-weight:400;color:var(--text3)">(title + estimated minutes each)</span></label>
+      <div id="tmpl-task-rows"></div>
+      <button class="btn-sm purple" style="margin-top:6px" onclick="addTemplateTaskRow()">+ Add task</button>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal('template-modal')">Cancel</button>
+      <button class="btn-save" onclick="saveTemplate()">Save template</button>
+    </div>
+  </div>
+</div>
+
+<!-- Assign task -->
+<div class="modal-overlay" id="assign-modal">
+ <div class="modal">
+ <h2>Assign new task</h2>
+ <div class="fg"><label class="fl">Task title</label><input class="fi" id="f-title" placeholder="e.g. Finalize UAT test cases"></div>
+ <div class="fg"><label class="fl">Assign to (select one or more)</label>
+ <div id="f-assignees-wrap" style="display:flex;flex-wrap:wrap;gap:6px;padding:8px;border:1px solid var(--border2);border-radius:var(--radius-sm);background:var(--surface)"></div>
+ </div>
+ <div class="fg"><label class="fl">Project</label><select class="fs" id="f-project-link"></select></div>
+ <div class="fg"><label class="fl">Due date</label><input class="fi" type="date" id="f-due"></div>
+ <div class="fg"><label class="fl">Notes for assignee</label><textarea class="ft" id="f-note" placeholder="Context or instructions..."></textarea></div>
+ <div class="modal-actions">
+ <button class="btn-cancel" onclick="closeModal('assign-modal')">Cancel</button>
+ <button class="btn-save" onclick="saveTask()">Assign task</button>
+ </div>
+ </div>
+</div>
+
+<!-- Handoff -->
+<div class="modal-overlay" id="handoff-modal">
+ <div class="modal">
+ <h2>Flag task for handoff</h2>
+ <p style="font-size:13px;color:var(--text2);margin-bottom:1rem">Tell your manager what you finished and what still needs doing.</p>
+ <div class="fg"><label class="fl">What did you complete?</label><textarea class="ft" id="hf-done" placeholder="e.g. Wrote test cases for scenarios 1–5..."></textarea></div>
+ <div class="fg"><label class="fl">What's still left?</label><textarea class="ft" id="hf-left" placeholder="e.g. Scenarios 6–10 still need UAT..."></textarea></div>
+ <div class="fg"><label class="fl">Suggest reassign to (optional)</label><select class="fs" id="hf-reassign"><option value="">Manager decides</option></select></div>
+ <div class="modal-actions">
+ <button class="btn-cancel" onclick="closeModal('handoff-modal')">Cancel</button>
+ <button class="btn-save" onclick="saveHandoff()">Send handoff</button>
+ </div>
+ </div>
+</div>
+
+<!-- Complete -->
+<div class="modal-overlay" id="complete-modal">
+ <div class="modal">
+ <h2>Mark task complete</h2>
+ <div class="fg"><label class="fl">Completion note (optional)</label><textarea class="ft" id="cm-note" placeholder="e.g. All cases passed. No issues found."></textarea></div>
+ <div class="modal-actions">
+ <button class="btn-cancel" onclick="closeModal('complete-modal')">Cancel</button>
+ <button class="btn-save" onclick="saveComplete()">Mark complete</button>
+ </div>
+ </div>
+</div>
+
+<!-- Meeting -->
+<div class="modal-overlay" id="meeting-modal">
+ <div class="modal">
+ <h2 id="meeting-modal-title">Log a meeting</h2>
+ <div class="fg"><label class="fl">Meeting title</label><input class="fi" id="m-title" placeholder="e.g. Billing sync — locker rollout"></div>
+ <div class="inline-row">
+ <div class="fg"><label class="fl">Date</label><input class="fi" type="date" id="m-date"></div>
+ <div class="fg"><label class="fl">Duration (minutes)</label><input class="fi" type="number" id="m-duration" min="0" placeholder="e.g. 60"></div>
+ </div>
+ <div class="fg"><label class="fl">Attendees</label><input class="fi" id="m-attendees" placeholder="e.g. Billing team, Ops lead"></div>
+ <div class="fg"><label class="fl">Linked project (optional)</label><select class="fs" id="m-project-link"><option value="">— None —</option></select></div>
+ <div class="fg"><label class="fl">Phase / stage at time of meeting</label>
+ <select class="fs" id="m-phase">
+ <option value="">— Not specified —</option>
+ <option value="planning">Planning</option>
+ <option value="active">Active / In progress</option>
+ <option value="review">Review / Testing</option>
+ <option value="done">Completion</option>
+ </select>
+ </div>
+ <div class="fg"><label class="fl">Summary / notes</label><textarea class="ft" id="m-notes" placeholder="Key points, decisions, next steps..."></textarea></div>
+ <div class="fg"><label class="fl">Tags (comma separated)</label><input class="fi" id="m-tags" placeholder="e.g. billing, lockers, address-mgmt"></div>
+ <div class="modal-actions">
+ <button class="btn-cancel" onclick="closeModal('meeting-modal')">Cancel</button>
+ <button class="btn-save" onclick="saveMeeting()">Save meeting</button>
+ </div>
+ </div>
+</div>
+
+<!-- Project -->
+<div class="modal-overlay" id="project-modal">
+ <div class="modal">
+ <h2 id="proj-modal-title">Add project</h2>
+ <input type="hidden" id="p-edit-id" value="">
+ <div class="fg"><label class="fl">Project name</label><input class="fi" id="p-name" placeholder="e.g. Locker rollout"></div>
+ <div class="fg"><label class="fl">Stage</label>
+ <select class="fs" id="p-stage">
+ <option value="planning">Planning</option>
+ <option value="active">Active</option>
+ <option value="review">Review</option>
+ <option value="done">Done</option>
+ <option value="blocked">Blocked</option>
+ </select>
+ </div>
+ <input type="hidden" id="p-pct" value="0">
+ <div style="font-size:12px;color:var(--text3);margin-bottom:1rem;padding:8px 10px;background:var(--surface2);border-radius:var(--radius-sm);border:1px solid var(--border)"> Progress % is calculated automatically from completed tasks — no need to enter it manually.</div>
+ <div class="fg"><label class="fl">Team members (assigned)</label>
+ <div id="p-members-checkboxes" style="display:flex;flex-wrap:wrap;gap:8px;padding:8px;border:1px solid var(--border2);border-radius:var(--radius-sm);background:var(--surface)"></div>
+ </div>
+ <div class="fg"><label class="fl">Project weight</label>
+ <select class="fs" id="p-weight">
+ <option value="1">1 — XS (very light)</option>
+ <option value="2">2 — S (light)</option>
+ <option value="3" selected>3 — M (medium)</option>
+ <option value="4">4 — L (heavy)</option>
+ <option value="5">5 — XL (very heavy)</option>
+ </select>
+ <div style="font-size:11px;color:var(--text3);margin-top:4px">Weight feeds into assigned members' productivity rate</div>
+ </div>
+ <div class="inline-row">
+ <div class="fg"><label class="fl">Start date</label><input class="fi" type="date" id="p-start"></div>
+ <div class="fg"><label class="fl">Target end date</label><input class="fi" type="date" id="p-target"></div>
+ </div>
+ <div class="fg"><label class="fl">Actual end date (leave blank if ongoing)</label><input class="fi" type="date" id="p-actual"></div>
+ <div class="fg"><label class="fl">Notes</label><textarea class="ft" id="p-notes" placeholder="Description, goals, next steps..."></textarea></div>
+ <div class="modal-actions">
+ <button class="btn-cancel" onclick="closeModal('project-modal')">Cancel</button>
+ <button class="btn-save" onclick="saveProject()">Save project</button>
+ </div>
+ </div>
+</div>
+
+<!-- Log work (employee) -->
+<div class="modal-overlay" id="logwork-modal">
+ <div class="modal">
+ <h2>Log today's work</h2>
+ <p style="font-size:13px;color:var(--text2);margin-bottom:1rem">Record task units completed and non-productive time so your productivity rate stays accurate.</p>
+ <div class="fg"><label class="fl">Date</label><input class="fi" type="date" id="lw-date"></div>
+ <div id="lw-task-rows"></div>
+ <button class="btn-sm purple" style="margin-bottom:1rem" onclick="addWorkRow()">+ Add task type</button>
+ <hr style="border:none;border-top:1px solid var(--border);margin-bottom:1rem">
+ <div class="fg"><label class="fl">Minutes in meetings today</label><input class="fi" type="number" id="lw-meet-mins" min="0" placeholder="e.g. 90"></div>
+ <div class="fg"><label class="fl">Minutes on admin / other non-project work</label><input class="fi" type="number" id="lw-admin-mins" min="0" placeholder="e.g. 30"></div>
+ <div class="modal-actions">
+ <button class="btn-cancel" onclick="closeModal('logwork-modal')">Cancel</button>
+ <button class="btn-save" onclick="saveWorkLog()">Save log</button>
+ </div>
+ </div>
+</div>
+
+<!-- Task type manager (manager only) -->
+<div class="modal-overlay" id="tasktype-modal">
+ <div class="modal">
+ <h2>Manage task types &amp; avg times</h2>
+ <p style="font-size:13px;color:var(--text2);margin-bottom:1rem">Define task categories and the average minutes each one takes. Employees select from these when logging work.</p>
+ <div id="tt-list"></div>
+ <hr style="border:none;border-top:1px solid var(--border);margin:1rem 0">
+ <div class="sub-label">Add new task type</div>
+ <div class="inline-row" style="margin-bottom:8px">
+ <div class="fg"><label class="fl">Task type name</label><input class="fi" id="tt-name" placeholder="e.g. UAT test case"></div>
+ <div class="fg"><label class="fl">Avg minutes each</label><input class="fi" type="number" id="tt-mins" min="1" placeholder="e.g. 30"></div>
+ </div>
+ <button class="btn-action" onclick="addTaskType()">Add task type</button>
+ <div class="modal-actions" style="margin-top:1rem">
+ <button class="btn-cancel" onclick="closeModal('tasktype-modal')">Close</button>
+ </div>
+ </div>
+</div>
+
+<script>
+// ── CONSTANTS ─────────────────────────────────────────────────
+const EMPLOYEES = ['Megan R.','Sonya M.','Jordan K.','Chris B.'];
+const AVATARS = ['MR','SM','JK','CB'];
+const AVAIL_MINS_DAY = 405; // 6.75 hrs
+
+// ── STORAGE ───────────────────────────────────────────────────
+function get(k){ try{ return JSON.parse(localStorage.getItem('opshub_'+k))||null; }catch(e){ return null; } }
+function set(k,v){ localStorage.setItem('opshub_'+k,JSON.stringify(v)); }
+function nid(arr){ return arr.length ? Math.max(...arr.map(x=>x.id))+1 : 1; }
+
+function getTasks(){
+ return get('tasks') || [
+ {id:1,title:'Finalize UAT test cases — Billing Phase 2',assignees:['Sonya M.'],projectId:2,due:'2025-06-10',status:'inprogress',managerNote:'Focus on edge cases for address validation.',handoffNote:null,completionNote:null,createdAt:'2025-05-28'},
+ {id:2,title:'Address validation interview documentation',assignees:['Megan R.'],projectId:3,due:'2025-06-07',status:'todo',managerNote:'Summarize findings from the agent override interviews.',handoffNote:null,completionNote:null,createdAt:'2025-05-29'},
+ {id:3,title:'HTG security assessment follow-up',assignees:['Jordan K.'],projectId:null,due:'2025-06-05',status:'flagged',managerNote:'Get vendor contact details.',handoffNote:{done:'Got vendor contact and sent email.',left:'Waiting on vendor to schedule call.',reassign:''},completionNote:null,createdAt:'2025-05-27'},
+ {id:4,title:'Locker placement requirements doc',assignees:['Chris B.'],projectId:1,due:'2025-06-03',status:'done',managerNote:'',handoffNote:null,completionNote:'Completed and shared with facilities.',createdAt:'2025-05-25'},
+ {id:5,title:'Onboarding checklist draft',assignees:['Megan R.'],projectId:5,due:'2025-06-14',status:'todo',managerNote:'Use PMI templates.',handoffNote:null,completionNote:null,createdAt:'2025-05-30'},
+ {id:6,title:'Productivity model — task unit definitions',assignees:['Sonya M.','Jordan K.'],projectId:null,due:'2025-06-12',status:'inprogress',managerNote:'Define what counts as one unit per role.',handoffNote:null,completionNote:null,createdAt:'2025-05-29'},
+ ];
+}
+function getIntakeRequests(){
+ return get('intake') || [
+ {id:1,title:'New agent onboarding portal',dept:'HR',contact:'Lisa Torres',priority:'high',description:'HR needs a simple portal for new agents to complete onboarding paperwork digitally. Currently all paper-based.',status:'pending',submittedAt:'2025-05-29',declineReason:''},
+ {id:2,title:'Monthly billing reconciliation report',dept:'Finance',contact:'Tom Walsh',priority:'medium',description:'Finance wants a monthly automated report showing billing discrepancies vs policy system.',status:'pending',submittedAt:'2025-05-30',declineReason:''},
+ {id:3,title:'Claims intake tracking dashboard',dept:'Claims',contact:'Priya Shah',priority:'high',description:'Claims team wants visibility into where each claim kit is in the mailing process.',status:'approved',submittedAt:'2025-05-25',declineReason:''},
+ ];
+}
+function saveIntakeRequests(r){ set('intake',r); }
+function saveTasks(t){ set('tasks',t); }
+
+function getProjects(){
+ return get('projects') || [
+ {id:1,name:'Locker placement & tracking rollout',members:['Chris B.'],stage:'active',pct:40,weight:4,notes:'2–5 year timeline. Placement debate ongoing.',startDate:'2025-04-01',targetEnd:'2027-12-31',actualEnd:'',activeStarted:'2025-04-01T08:00:00',attachments:[],chat:[{author:'Chris B.',text:'Confirmed 3 locker locations with facilities.',ts:'2025-05-28 09:14'}]},
+ {id:2,name:'HTG third-party security assessment',members:['Jordan K.'],stage:'review',pct:70,weight:3,notes:'Vendor assessment in progress.',startDate:'2025-03-15',targetEnd:'2025-06-30',actualEnd:'',attachments:[],chat:[{author:'Jordan K.',text:'Vendor confirmed scope. Awaiting final report.',ts:'2025-05-27 14:02'}]},
+ {id:3,name:'Address validation & USPS return rate',members:['Sonya M.'],stage:'planning',pct:15,weight:3,notes:'10% return rate — root cause needed.',startDate:'2025-06-01',targetEnd:'2025-09-01',actualEnd:'',attachments:[],chat:[]},
+ {id:4,name:'Howell Office transition to Worcester',members:['Megan R.','Jordan K.'],stage:'active',pct:55,weight:2,notes:'Out of building by April.',startDate:'2025-02-01',targetEnd:'2025-06-30',actualEnd:'',activeStarted:'2025-02-03T08:00:00',attachments:[],chat:[{author:'Megan R.',text:'HR letter of intent sent to facilities.',ts:'2025-05-26 11:30'}]},
+ {id:5,name:'BA onboarding framework',members:['Megan R.'],stage:'planning',pct:10,weight:2,notes:'Using PMI templates.',startDate:'2025-06-01',targetEnd:'2025-08-01',actualEnd:'',attachments:[],chat:[]},
+ {id:6,name:'Lean/Kanban board — Billing & ABLM',members:['Sonya M.'],stage:'done',pct:100,weight:1,notes:'Boards live.',startDate:'2025-01-10',targetEnd:'2025-04-01',actualEnd:'2025-03-28',attachments:[],chat:[{author:'Sonya M.',text:'All boards live and team trained.',ts:'2025-03-28 16:00'}]},
+ ];
+}
+function saveProjects(p){ set('projects',p); }
+
+// Live progress: tasks done ÷ total tasks linked to project
+// If no tasks linked yet, fall back to the manually stored pct
+function projPct(projId){
+ const tasks=getTasks().filter(t=>t.projectId===projId);
+ if(!tasks.length){
+ const p=getProjects().find(p=>p.id===projId);
+ return p?p.pct:0;
+ }
+ const done=tasks.filter(t=>t.status==='done').length;
+ return Math.round(done/tasks.length*100);
+}
+
+function getMeetings(){
+ return get('meetings') || [
+ {id:1,title:'Billing Group — Locker tracking sync',date:'2025-05-30',duration:60,attendees:'Billing team, Ops lead',projectId:1,phase:'active',notes:'Discussed locker placement, Howell transition timeline, address management gaps.',tags:['locker','tracking','Howell','address mgmt']},
+ {id:2,title:'Sonya — Productivity model review',date:'2025-05-28',duration:45,attendees:'Sonya, BA team',projectId:null,phase:'planning',notes:'Ideal tracking: task units × avg time. No structured units yet. Staffing model using historical data.',tags:['productivity','UAT','staffing','Kanban']},
+ {id:3,title:'Megan — Onboarding & tool review',date:'2025-05-27',duration:60,attendees:'Megan, PM group',projectId:5,phase:'planning',notes:'Onboarding inconsistent. Monday.com used unevenly. OneNote search difficult. Need centralized checklist.',tags:['onboarding','Monday.com','OneNote','training']},
+ {id:4,title:'HTG security assessment kickoff',date:'2025-05-22',duration:30,attendees:'IT, Ops, Billing',projectId:2,phase:'planning',notes:'Third-party review initiated. Vendor to conduct assessment.',tags:['HTG','security','third-party']},
+ ];
+}
+function saveMeetings(m){ set('meetings',m); }
+
+function getTaskTypes(){
+ return get('tasktypes') || [
+ {id:1,name:'UAT test case (write + execute)',avgMins:30},
+ {id:2,name:'Requirements document',avgMins:45},
+ {id:3,name:'Interview / stakeholder call',avgMins:60},
+ {id:4,name:'Address validation review',avgMins:15},
+ {id:5,name:'Project status update',avgMins:20},
+ {id:6,name:'Incident / production support',avgMins:45},
+ ];
+}
+function saveTaskTypes(t){ set('tasktypes',t); }
+
+function getWorkLogs(){
+ return get('worklogs') || [
+ {id:1,employee:'Sonya M.',date:'2025-05-30',entries:[{typeId:1,qty:8},{typeId:5,qty:1}],meetMins:90,adminMins:15},
+ {id:2,employee:'Megan R.',date:'2025-05-30',entries:[{typeId:2,qty:1},{typeId:3,qty:1}],meetMins:120,adminMins:20},
+ {id:3,employee:'Jordan K.',date:'2025-05-30',entries:[{typeId:6,qty:2},{typeId:5,qty:1}],meetMins:60,adminMins:30},
+ {id:4,employee:'Chris B.',date:'2025-05-30',entries:[{typeId:4,qty:12},{typeId:2,qty:1}],meetMins:45,adminMins:15},
+ ];
+}
+function saveWorkLogs(w){ set('worklogs',w); }
+
+// ── AUTH ──────────────────────────────────────────────────────
+let cu=null, activePage='overview', mSubTab='board', eSubTab='open';
+let projFilter='all', meetFilter='all', meetProjFilter='all', meetPhaseFilter='all';
+let editMeetingId=null, handoffTaskId=null, completeTaskId=null;
+
+function login(){
+ const val=document.getElementById('login-user').value;
+ if(!val){alert('Please select your name.');return;}
+ const [role,name]=val.split('|');
+ cu={role,name};
+ document.getElementById('login-screen').style.display='none';
+ document.getElementById('app').style.display='block';
+ const b=document.getElementById('role-badge');
+ b.textContent=role==='manager'?'Manager':'Employee';
+ b.className='trole '+(role==='manager'?'role-manager':'role-employee');
+ document.getElementById('topbar-username').textContent=name;
+ activePage='overview'; render();
+}
+function logout(){ cu=null; document.getElementById('login-screen').style.display='flex'; document.getElementById('app').style.display='none'; }
+
+// ── SIDEBAR ───────────────────────────────────────────────────
+function buildSidebar(){
+  const isMgr=cu.role==='manager';
+  const groups=[
+    {label:'Workspace',pages:[
+      {id:'overview',label:isMgr?'Daily Digest':'My Overview'},
+      {id:'tasks',label:isMgr?'Tasks':'My Tasks'},
+      {id:'projects',label:'Projects'},
+      {id:'kanban',label:'Kanban Board'},
+    ]},
+    {label:'Communication',pages:[
+      {id:'meetings',label:'Meetings'},
+      {id:'intake',label:'Intake / Requests'},
+    ]},
+    {label:'Reporting',pages:[
+      {id:'productivity',label:isMgr?'Productivity':'My Productivity'},
+      {id:'analytics',label:'Analytics'},
+      {id:'onboarding',label:'Onboarding'},
+    ]},
+  ];
+  let html='';
+  groups.forEach(g=>{
+    html+=`<div class="nav-group-label">${g.label}</div>`;
+    g.pages.forEach(p=>{
+      html+=`<div class="nav-item ${activePage===p.id?'active':''}" onclick="navTo('${p.id}')">${p.label}</div>`;
+    });
+  });
+  return html;
+}
+function navTo(p){ activePage=p; render(); }
+function render(){
+ document.getElementById('sidebar').innerHTML=buildSidebar();
+ if(activePage==='overview') renderOverview();
+ else if(activePage==='tasks') cu.role==='manager'?renderMgrTasks():renderEmpTasks();
+ else if(activePage==='projects') renderProjects();
+ else if(activePage==='meetings') renderMeetings();
+ else if(activePage==='productivity') renderProductivity();
+ else if(activePage==='kanban') renderKanban();
+ else if(activePage==='intake') renderIntake();
+  else if(activePage==='analytics') renderAnalytics();
+  else if(activePage==='onboarding') renderOnboarding();
+}
+
+// ── OVERVIEW / DAILY DIGEST ──────────────────────────────────
+function renderOverview(){
+  const tasks=getTasks(), projects=getProjects(), meetings=getMeetings();
+  const isMgr=cu.role==='manager';
+  const today=new Date();
+  const todayStr=today.toISOString().slice(0,10);
+  const weekEnd=new Date(today); weekEnd.setDate(today.getDate()+7);
+  const weekEndStr=weekEnd.toISOString().slice(0,10);
+
+  const mine=isMgr?tasks:tasks.filter(t=>(t.assignees||[]).includes(cu.name));
+  const open=mine.filter(t=>t.status!=='done');
+  const dueThisWeek=open.filter(t=>t.due&&t.due>=todayStr&&t.due<=weekEndStr);
+  const overdue=open.filter(t=>t.due&&t.due<todayStr);
+  const flagged=tasks.filter(t=>t.status==='flagged');
+  const pending=getIntakeRequests().filter(r=>r.status==='pending');
+  const atRisk=projects.filter(p=>{const tl=timelineStatus(p);return tl.cls==='timeline-risk'||tl.cls==='timeline-late';});
+  const recentMeetings=meetings.slice(0,3);
+
+  let h=`<div style="font-size:19px;font-weight:400;font-family:'DM Serif Display',serif;color:var(--navy);margin-bottom:1.25rem">${isMgr?'Daily Digest':'My Overview'} <span style="font-size:13px;font-weight:400;color:var(--text3);font-family:'Newsreader',serif">${fmtDate(todayStr)}</span></div>`;
+
+  // ── Stat strip
+  h+=`<div class="stats-row">
+    <div class="stat-card"><div class="stat-num" style="color:var(--accent)">${open.length}</div><div class="stat-label">Open tasks</div></div>
+    <div class="stat-card" style="cursor:pointer" onclick="navTo('tasks')"><div class="stat-num" style="color:var(--red)">${overdue.length}</div><div class="stat-label">Overdue</div></div>
+    <div class="stat-card"><div class="stat-num" style="color:var(--amber)">${dueThisWeek.length}</div><div class="stat-label">Due this week</div></div>
+    ${isMgr?`<div class="stat-card" style="cursor:pointer" onclick="navTo('tasks')"><div class="stat-num" style="color:var(--amber)">${flagged.length}</div><div class="stat-label">Need attention</div></div>`:''}
+    ${isMgr?`<div class="stat-card" style="cursor:pointer" onclick="navTo('intake')"><div class="stat-num" style="color:var(--red)">${pending.length}</div><div class="stat-label">Pending requests</div></div>`:''}
+    <div class="stat-card" style="cursor:pointer" onclick="navTo('projects')"><div class="stat-num" style="color:var(--red)">${atRisk.length}</div><div class="stat-label">Projects at risk</div></div>
+  </div>`;
+
+  if(isMgr&&flagged.length) h+=`<div class="handoff-alert">${flagged.length} task${flagged.length>1?'s':''} flagged for handoff — <span style="cursor:pointer;text-decoration:underline" onclick="navTo('tasks')">review in Tasks</span></div>`;
+  if(isMgr&&pending.length) h+=`<div class="handoff-alert" style="background:var(--red-light);border-color:#F0B8B4;color:var(--red)">${pending.length} department request${pending.length>1?'s':''} awaiting review — <span style="cursor:pointer;text-decoration:underline" onclick="navTo('intake')">go to Intake</span></div>`;
+
+  h+=`<div class="two-col">`;
+
+  // ── Left col: due this week + overdue
+  h+=`<div>`;
+  if(dueThisWeek.length||overdue.length){
+    if(overdue.length){
+      h+=`<div class="digest-section"><div class="digest-section-title" style="color:var(--red)">Overdue</div>`;
+      overdue.slice(0,4).forEach(t=>{
+        const proj=projects.find(p=>p.id===t.projectId);
+        h+=`<div class="week-task-row" style="cursor:pointer" onclick="${t.projectId?`openProjId=${t.projectId};activePage='projects';render()`:`activePage='tasks';render()`}">
+          ${sDot(t.status)}
+          <span style="flex:1;font-weight:500">${t.title}</span>
+          <span style="font-size:11px;color:var(--red);font-weight:600">${t.due}</span>
+        </div>`;
+      });
+      h+=`</div>`;
+    }
+    h+=`<div class="digest-section"><div class="digest-section-title">Due this week</div>`;
+    if(!dueThisWeek.length) h+=`<div style="font-size:13px;color:var(--text3)">Nothing due in the next 7 days</div>`;
+    dueThisWeek.forEach(t=>{
+      const proj=projects.find(p=>p.id===t.projectId);
+      const assignees=(t.assignees||[]).join(', ');
+      h+=`<div class="week-task-row" style="cursor:pointer" onclick="${t.projectId?`openProjId=${t.projectId};activePage='projects';render()`:`activePage='tasks';render()`}">
+        ${sDot(t.status)}
+        <span style="flex:1;font-weight:500">${t.title}</span>
+        <span style="font-size:11px;color:var(--text2)">${t.due}</span>
+      </div>`;
+    });
+    h+=`</div>`;
+  } else {
+    h+=`<div class="digest-section"><div class="digest-section-title">Due this week</div><div style="font-size:13px;color:var(--text3)">Nothing due in the next 7 days</div></div>`;
+  }
+
+  // ── Projects at risk
+  if(atRisk.length){
+    h+=`<div class="digest-section"><div class="digest-section-title" style="color:var(--amber)">Projects at risk</div>`;
+    atRisk.forEach(p=>{
+      const tl=timelineStatus(p);
+      h+=`<div class="card" style="cursor:pointer;margin-bottom:6px" onclick="openProjId=${p.id};activePage='projects';render()">
+        <div style="font-weight:600;font-size:13px;color:var(--navy)">${p.name}</div>
+        <div style="font-size:12px;margin-top:3px" class="${tl.cls}">${tl.label}</div>
+        <div style="font-size:12px;color:var(--text2);margin-top:2px">${(p.members||[]).join(', ')}</div>
+      </div>`;
+    });
+    h+=`</div>`;
+  }
+  h+=`</div>`;
+
+  // ── Right col: recent meetings + team tasks (manager) or my open tasks
+  h+=`<div>`;
+  if(isMgr){
+    h+=`<div class="digest-section"><div class="digest-section-title">Team — open tasks</div>`;
+    EMPLOYEES.forEach((emp,i)=>{
+      const empOpen=tasks.filter(t=>(t.assignees||[]).includes(emp)&&t.status!=='done');
+      const empFlag=empOpen.filter(t=>t.status==='flagged');
+      h+=`<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--border)">
+        <div class="avatar av-${i}" style="width:28px;height:28px;font-size:11px;flex-shrink:0">${AVATARS[i]}</div>
+        <span style="flex:1;font-weight:500;font-size:13px">${emp}</span>
+        <span style="font-size:12px;color:var(--text2)">${empOpen.length} open</span>
+        ${empFlag.length?`<span style="font-size:11px;color:var(--amber);font-weight:600">${empFlag.length} flagged</span>`:''}
+      </div>`;
+    });
+    h+=`</div>`;
+  } else {
+    h+=`<div class="digest-section"><div class="digest-section-title">My open tasks</div>`;
+    open.slice(0,5).forEach(t=>{
+      const proj=projects.find(p=>p.id===t.projectId);
+      h+=`<div class="week-task-row" style="cursor:pointer" onclick="${t.projectId?`openProjId=${t.projectId};activePage='projects';render()`:`activePage='tasks';render()`}">
+        ${sDot(t.status)} <span style="flex:1">${t.title}</span>
+        ${proj?`<span class="tag-pill" style="font-size:10px">${proj.name.slice(0,16)}</span>`:''}
+      </div>`;
+    });
+    if(!open.length) h+=`<div style="font-size:13px;color:var(--text3)">No open tasks</div>`;
+    h+=`</div>`;
+  }
+
+  h+=`<div class="digest-section"><div class="digest-section-title">Recent meetings</div>`;
+  recentMeetings.forEach(m=>{
+    const proj=projects.find(p=>p.id===m.projectId);
+    const actions=(m.actionItems||[]).filter(a=>!a.done);
+    h+=`<div class="card" style="cursor:pointer;margin-bottom:6px" onclick="${proj?`openProjId=${proj.id};activePage='projects';render()`:`activePage='meetings';render()`}">
+      <div class="meeting-title">${m.title}</div>
+      <div style="font-size:12px;color:var(--text2);margin-top:2px">${m.date}${m.duration?' · '+m.duration+'m':''}</div>
+      ${actions.length?`<div style="font-size:11px;color:var(--amber);margin-top:4px;font-weight:600">${actions.length} open action item${actions.length>1?'s':''}</div>`:''}
+    </div>`;
+  });
+  if(!recentMeetings.length) h+=`<div style="font-size:13px;color:var(--text3)">No meetings logged yet</div>`;
+  h+=`</div></div></div>`;
+
+  mc(h);
+}
+
+// ── MANAGER TASKS ─────────────────────────────────────────────}
+
+// ── MANAGER TASKS ─────────────────────────────────────────────
+function renderMgrTasks(){
+ const tasks=getTasks();
+ const flagged=tasks.filter(t=>t.status==='flagged');
+ const open=tasks.filter(t=>t.status!=='done').length;
+ const done=tasks.filter(t=>t.status==='done').length;
+ let h=`<div class="stats-row">
+ <div class="stat-card"><div class="stat-num" style="color:var(--purple)">${open}</div><div class="stat-label">Open</div></div>
+ <div class="stat-card"><div class="stat-num" style="color:var(--amber)">${flagged.length}</div><div class="stat-label">Need attention</div></div>
+ <div class="stat-card"><div class="stat-num" style="color:var(--green)">${done}</div><div class="stat-label">Done</div></div>
+ </div>`;
+ if(flagged.length) h+=`<div class="handoff-alert">! ${flagged.length} task${flagged.length>1?'s':''} flagged for handoff</div>`;
+ h+=`<div class="section-header">
+ <div class="filter-row" style="margin:0">
+ <button class="filter-btn ${mSubTab==='board'?'active':''}" onclick="setMS('board')">Team board</button>
+ <button class="filter-btn ${mSubTab==='all'?'active':''}" onclick="setMS('all')">All tasks</button>
+ </div>
+ <button class="btn-action" onclick="openAssign()">+ Assign task</button>
+ </div>`;
+ if(mSubTab==='board'){
+ h+=`<div class="employee-grid">`;
+ EMPLOYEES.forEach((emp,i)=>{
+ const et=tasks.filter(t=>t.assignee===emp), ot=et.filter(t=>t.status!=='done');
+ h+=`<div class="emp-card"><div class="emp-header"><div class="avatar av-${i}">${AVATARS[i]}</div><div style="flex:1"><div class="emp-name">${emp}</div><div class="emp-stats">${ot.length} open · ${et.filter(t=>t.status==='done').length} done</div></div><button class="btn-sm purple" onclick="openAssignFor('${emp}')">+ Task</button></div><div class="emp-tasks">`;
+ if(!ot.length) h+=`<div class="empty-state">No open tasks</div>`;
+ else ot.forEach(t=>{h+=`<div class="emp-task-row ${t.status==='flagged'?'flagged-row':''}">${sDot(t.status)}<span class="emp-task-name" title="${t.title}">${t.title}</span>${t.status==='flagged'?'<span>!</span>':''}</div>`;});
+ h+=`</div></div>`;
+ });
+ h+=`</div>`;
+ } else {
+ const so={flagged:0,inprogress:1,todo:2,done:3};
+ [...tasks].sort((a,b)=>so[a.status]-so[b.status]).forEach(t=>{h+=taskCard(t,'manager');});
+ }
+ mc(h);
+}
+function setMS(t){ mSubTab=t; renderMgrTasks(); }
+
+// ── EMPLOYEE TASKS ────────────────────────────────────────────
+function renderEmpTasks(){
+ const tasks=getTasks().filter(t=>(t.assignees||[]).includes(cu.name));
+ const open=tasks.filter(t=>t.status!=='done'), done=tasks.filter(t=>t.status==='done'), flagged=tasks.filter(t=>t.status==='flagged');
+ let h=`<div class="stats-row">
+ <div class="stat-card"><div class="stat-num" style="color:var(--purple)">${open.length}</div><div class="stat-label">Open</div></div>
+ <div class="stat-card"><div class="stat-num" style="color:var(--amber)">${flagged.length}</div><div class="stat-label">Flagged</div></div>
+ <div class="stat-card"><div class="stat-num" style="color:var(--green)">${done.length}</div><div class="stat-label">Done</div></div>
+ </div>
+ <div class="section-header">
+ <div class="filter-row" style="margin:0">
+ <button class="filter-btn ${eSubTab==='open'?'active':''}" onclick="setES('open')">Open</button>
+ <button class="filter-btn ${eSubTab==='done'?'active':''}" onclick="setES('done')">Completed</button>
+ </div>
+ </div>`;
+ const list=eSubTab==='open'?open:done;
+ if(!list.length) h+=`<div class="card"><div class="empty-state">${eSubTab==='open'?'No open tasks!':'No completed tasks yet.'}</div></div>`;
+ else list.forEach(t=>{h+=taskCard(t,'employee');});
+ mc(h);
+}
+function setES(t){ eSubTab=t; renderEmpTasks(); }
+
+// ── TASK CARD ─────────────────────────────────────────────────
+function taskCard(t,view){
+ const isDone=t.status==='done';
+ const proj=getProjects().find(p=>p.id===t.projectId);
+ const assignees=t.assignees||[];
+ let h=`<div class="card ${t.status==='flagged'?'flagged-card':''} ${isDone?'done-card':''}">
+ <div class="card-top"><div class="card-info">
+ <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px">
+ <div class="task-title" style="flex:1">${t.title}</div>
+ ${proj?`<span class="proj-link-badge" onclick="event.stopPropagation();openProjId=${proj.id};activePage='projects';render()"> ${proj.name.length>22?proj.name.slice(0,22)+'…':proj.name}</span>`:`<span class="proj-link-badge no-proj">No project</span>`}
+ </div>
+ <div class="task-meta">${sBadge(t.status)}
+ ${assignees.length?`<span> ${assignees.join(', ')}</span>`:''}
+ ${t.due?`<span> ${t.due}</span>`:''}
+ </div>`;
+ if(t.managerNote) h+=`<div class="task-note"><strong>Note:</strong> ${t.managerNote}</div>`;
+ if(t.handoffNote) h+=`<div class="task-note"><strong>! Handoff:</strong> ${t.handoffNote.done}<br><strong>Still left:</strong> ${t.handoffNote.left}${t.handoffNote.reassign?`<br><strong>Suggest:</strong> ${t.handoffNote.reassign}`:''}</div>`;
+ if(t.completionNote) h+=`<div class="task-note" style="background:var(--green-light);border-color:#9ED4BC"><strong></strong> ${t.completionNote}</div>`;
+ h+=`</div><div class="card-actions">`;
+ if(view==='manager'){
+ if(t.status==='flagged') h+=`<button class="btn-sm purple" onclick="ackHandoff(${t.id})">Acknowledge</button>`;
+ if(!isDone) h+=`<button class="btn-sm success" onclick="mgrComplete(${t.id})">Mark done</button>`;
+ h+=`<button class="btn-sm danger" onclick="delTask(${t.id})">Delete</button>`;
+ } else {
+ if(!isDone){
+ if(t.status!=='flagged'){
+ h+=`<button class="btn-sm purple" onclick="openHandoff(${t.id})">Flag handoff</button>`;
+ h+=`<button class="btn-sm success" onclick="openComplete(${t.id})">Mark done</button>`;
+ } else h+=`<span style="font-size:12px;color:var(--amber);font-weight:500">! Waiting on manager</span>`;
+ }
+ }
+ h+=`</div></div></div>`;
+ return h;
+}
+
+// ── PROJECT BOARD ─────────────────────────────────────────────
+let openProjId=null, projDetailTab={};
+
+function weightLabel(w){ return {1:'XS',2:'S',3:'M',4:'L',5:'XL'}[w]||'—'; }
+function weightColor(w){ return {1:'#1E7A52',2:'#1A5FAA',3:'#B06B0B',4:'#C0392B',5:'#6B1A8A'}[w]||'#888'; }
+
+function fmtDate(d){
+  if(!d) return '—';
+  const months=['January','February','March','April','May','June','July','August','September','October','November','December'];
+  const parts=d.split('-');
+  if(parts.length<3) return d;
+  return months[parseInt(parts[1])-1]+' '+parseInt(parts[2])+', '+parts[0];
+}
+
+function elapsedSince(isoStr){
+  if(!isoStr) return null;
+  const ms=Date.now()-new Date(isoStr).getTime();
+  if(ms<0) return null;
+  const days=Math.floor(ms/86400000);
+  const hrs=Math.floor((ms%86400000)/3600000);
+  if(days>0) return days+'d '+hrs+'h active';
+  const mins=Math.floor((ms%3600000)/60000);
+  return hrs+'h '+mins+'m active';
+}
+
+function timelineStatus(p){
+ if(p.stage==='done') return {label:' Completed'+(p.actualEnd?' '+p.actualEnd:''),cls:'timeline-done'};
+ if(!p.targetEnd) return {label:'No target set',cls:''};
+ const today=new Date(), target=new Date(p.targetEnd);
+ const daysLeft=Math.round((target-today)/(1000*60*60*24));
+ const totalDays=p.startDate?Math.round((target-new Date(p.startDate))/(1000*60*60*24)):null;
+ const pctTime=totalDays&&totalDays>0?Math.round((1-(daysLeft/totalDays))*100):null;
+ if(daysLeft<0) return {label:'! '+Math.abs(daysLeft)+'d overdue',cls:'timeline-late'};
+ const livePct=projPct(p.id);
+ if(pctTime!==null&&livePct<pctTime-15) return {label:'! At risk · '+daysLeft+'d left',cls:'timeline-risk'};
+ return {label:' On track · '+daysLeft+'d left',cls:'timeline-on'};
+}
+
+function renderProjects(){
+ if(openProjId!==null){ renderProjDetail(openProjId); return; }
+ const projects=getProjects(), meetings=getMeetings();
+ const filtered=projFilter==='all'?projects:projects.filter(p=>p.stage===projFilter);
+ const isMgr=cu.role==='manager';
+ let h=`<div class="section-header">
+ <div class="filter-row" style="margin:0">
+ ${['all','planning','active','review','done','blocked'].map(f=>`<button class="filter-btn ${projFilter===f?'active':''}" onclick="setPF('${f}')">${f==='all'?'All':f.charAt(0).toUpperCase()+f.slice(1)}</button>`).join('')}
+ </div>
+ ${isMgr?`<button class="btn-action" onclick="openProjModal()">+ Add project</button>`:''}
+ </div>
+ <div class="card" style="padding:0;overflow:hidden">
+ <table class="pb-table">
+ <thead><tr>
+ <th style="min-width:200px">Project</th>
+ <th>Status</th><th>Team</th><th>Weight</th><th>Timeline</th>
+ <th style="min-width:120px">Progress</th><th></th>
+ </tr></thead><tbody>`;
+ if(!filtered.length){
+ h+=`<tr><td colspan="8"><div class="empty-state">No projects in this stage</div></td></tr>`;
+ } else {
+ filtered.forEach(p=>{
+ const tl=timelineStatus(p);
+ const pMeetings=meetings.filter(m=>m.projectId===p.id);
+ const fc={planning:'#7F77DD',active:'#1E7A52',review:'#B06B0B',done:'#0F6E56',blocked:'#C0392B'}[p.stage]||'#888';
+ const wc=weightColor(p.weight||0);
+ h+=`<tr style="cursor:pointer" onclick="openProjId=${p.id};renderProjects()">
+ <td>
+ <div class="pb-name">${p.name}</div>
+ ${p.notes?`<div class="pb-notes">${p.notes.length>55?p.notes.slice(0,55)+'…':p.notes}</div>`:''}
+ ${pMeetings.length?`<div style="font-size:11px;color:var(--text3);margin-top:2px"> ${pMeetings.length} meeting${pMeetings.length!==1?'s':''}</div>`:''}
+ </td>
+ <td>${stageBadge(p.stage)}</td>
+ <td>${(p.members||[]).map(m=>`<span class="member-chip">${m.split(' ')[0]} ${m.split(' ')[1]?m.split(' ')[1][0]+'.':''}</span>`).join('')}</td>
+ <td>
+ <div class="weight-bar">${[1,2,3,4,5].map(i=>`<span class="weight-pip" style="background:${i<=(p.weight||0)?wc:'var(--border)'}"></span>`).join('')}</div>
+ <div style="font-size:11px;color:${wc};font-weight:600;margin-top:2px">${weightLabel(p.weight||0)}</div>
+ </td>
+ <td class="timeline-cell">
+ <div style="color:var(--text2)">${p.startDate||'—'} -> ${p.targetEnd||'—'}</div>
+ <div class="${tl.cls}">${tl.label}</div>
+ </td>
+ <td>
+ <div style="height:6px;background:var(--border);border-radius:3px;margin-bottom:3px">
+ <div style="height:100%;width:${projPct(p.id)}%;background:${fc};border-radius:3px"></div>
+ </div>
+ <div style="font-size:11px;color:var(--text2)">${projPct(p.id)}%</div>
+ </td>
+ <td onclick="event.stopPropagation()" style="white-space:nowrap">
+ <button class="btn-sm purple" onclick="openProjId=${p.id};renderProjects()">Open -></button>
+ ${isMgr?`<button class="btn-sm danger" style="margin-left:4px" onclick="if(confirm('Delete this project?'))delProject(${p.id})">x</button>`:''}
+ </td>
+ </tr>`;
+ });
+ }
+ h+=`</tbody></table></div>`;
+ mc(h);
+}
+function setPF(f){ projFilter=f; renderProjects(); }
+
+function renderProjDetail(id){
+ const projects=getProjects(), meetings=getMeetings();
+ const p=projects.find(p=>p.id===id);
+ if(!p){ openProjId=null; renderProjects(); return; }
+ const isMgr=cu.role==='manager';
+ const tab=projDetailTab[id]||'updates';
+ const tl=timelineStatus(p);
+ const fc={planning:'#7F77DD',active:'#1E7A52',review:'#B06B0B',done:'#0F6E56',blocked:'#C0392B'}[p.stage]||'#888';
+ const wc=weightColor(p.weight||0);
+ const pMeetings=meetings.filter(m=>m.projectId===p.id);
+ let h=`
+ <div style="margin-bottom:1rem">
+ <button class="btn-sm" onclick="openProjId=null;renderProjects()">← Back to Projects</button>
+ </div>
+ <div class="card" style="margin-bottom:12px">
+ <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap">
+ <div style="flex:1">
+ <div style="font-size:22px;font-weight:400;margin-bottom:6px;font-family:'DM Serif Display',serif;color:var(--navy)">${p.name}</div>
+ <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:8px">
+ ${stageBadge(p.stage)}
+ <span style="font-size:12px;color:var(--text2)"> ${(p.members||[]).join(', ')||'Unassigned'}</span>
+ <span style="font-size:12px;color:${wc};font-weight:600"> ${weightLabel(p.weight||0)} weight</span>
+ </div>
+ ${p.notes?`<div style="font-size:13px;color:var(--text2)">${p.notes}</div>`:''}
+ </div>
+ ${isMgr?`<div style="display:flex;gap:6px;flex-shrink:0"><button class="btn-action" onclick="openEditProj(${p.id})">Edit</button><button class="btn-sm danger" onclick="if(confirm('Delete?')){openProjId=null;delProject(${p.id})}">Delete</button></div>`:''}
+ </div>
+ <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px;margin-top:1rem;padding-top:1rem;border-top:1px solid var(--border)">
+ <div style="text-align:center">
+ <div style="font-size:22px;font-weight:700;color:${fc}">${projPct(p.id)}%</div>
+ <div style="font-size:11px;color:var(--text2)">Complete</div>
+ <div style="height:4px;background:var(--border);border-radius:2px;margin-top:4px"><div style="height:100%;width:${projPct(p.id)}%;background:${fc};border-radius:2px"></div></div>
+ </div>
+ <div style="text-align:center"><div style="font-size:14px;font-weight:700;color:var(--blue)">${p.startDate||'—'}</div><div style="font-size:11px;color:var(--text2)">Start</div></div>
+ <div style="text-align:center"><div style="font-size:14px;font-weight:700;color:var(--amber)">${p.targetEnd||'—'}</div><div style="font-size:11px;color:var(--text2)">Target end</div></div>
+ <div style="text-align:center"><div style="font-size:12px;font-weight:700" class="${tl.cls}">${tl.label}</div><div style="font-size:11px;color:var(--text2)">Timeline</div></div>
+ <div style="text-align:center">
+ <div class="weight-bar" style="justify-content:center;margin-bottom:3px">${[1,2,3,4,5].map(i=>`<span class="weight-pip" style="width:13px;height:13px;background:${i<=(p.weight||0)?wc:'var(--border)'}"></span>`).join('')}</div>
+ <div style="font-size:13px;font-weight:700;color:${wc}">${weightLabel(p.weight||0)}</div>
+ <div style="font-size:11px;color:var(--text2)">Weight</div>
+ </div>
+ <div style="text-align:center"><div style="font-size:22px;font-weight:700;color:var(--teal)">${pMeetings.length}</div><div style="font-size:11px;color:var(--text2)">Meetings</div></div>
+ </div>
+ </div>
+ <div class="proj-panel-tabs" style="margin-bottom:1rem">
+ <button class="ppt ${tab==='updates'?'active':''}" onclick="projDetailTab[${id}]='updates';renderProjects()"> Updates</button>
+ <button class="ppt ${tab==='attachments'?'active':''}" onclick="projDetailTab[${id}]='attachments';renderProjects()"> Attachments</button>
+ <button class="ppt ${tab==='meetings'?'active':''}" onclick="projDetailTab[${id}]='meetings';renderProjects()"> Meetings</button>
+ <button class="ppt ${tab==='tasks'?'active':''}" onclick="projDetailTab[${id}]='tasks';renderProjects()"> Tasks</button>
+ <button class="ppt ${tab==='details'?'active':''}" onclick="projDetailTab[${id}]='details';renderProjects()">i Details</button>
+ </div>`;
+ if(tab==='updates'){
+ h+=`<div class="card"><div class="sub-label" style="margin-bottom:10px">Project updates</div><div class="chat-feed">`;
+ if(!(p.chat||[]).length) h+=`<div class="empty-state">No updates yet — post the first one</div>`;
+ (p.chat||[]).forEach(c=>{
+ const isMe=c.author===cu.name;
+ h+=`<div class="chat-msg" style="${isMe?'border-left:3px solid var(--purple)':''}">
+ <div class="chat-msg-header"><span class="chat-msg-author" style="${isMe?'color:var(--purple)':''}">${isMe?'You':c.author}</span><span class="chat-msg-ts">${c.ts}</span></div>
+ <div class="chat-msg-text">${c.text}</div>
+ </div>`;
+ });
+ h+=`</div><div class="chat-input-row">
+ <input class="chat-input" id="chat-inp-${p.id}" placeholder="Post an update, flag a blocker, ask a question…" onkeydown="if(event.key==='Enter')postChat(${p.id})">
+ <button class="btn-action" onclick="postChat(${p.id})">Post</button>
+ </div></div>`;
+ }
+ if(tab==='attachments'){
+ h+=`<div class="card"><div class="sub-label" style="margin-bottom:10px">Files & attachments</div><div class="attach-list">`;
+ if(!(p.attachments||[]).length) h+=`<div class="empty-state" style="padding:.5rem 0">No files attached yet</div>`;
+ (p.attachments||[]).forEach((a,i)=>{
+ h+=`<div class="attach-item"><span style="font-size:18px"></span><span class="attach-name">${a.name}</span><span class="attach-size">${a.size||''}</span><span style="font-size:11px;color:var(--text3)">by ${a.addedBy}</span><button class="btn-sm danger" onclick="delAttachment(${p.id},${i})">x</button></div>`;
+ });
+ h+=`</div><div class="attach-drop" onclick="document.getElementById('file-inp-${p.id}').click()"> Click to attach files<input type="file" id="file-inp-${p.id}" style="display:none" multiple onchange="handleAttach(${p.id},this)"></div></div>`;
+ }
+ if(tab==='meetings'){
+ h+=`<div class="card"><div class="sub-label" style="margin-bottom:10px">Linked meetings</div>`;
+ if(!pMeetings.length) h+=`<div class="empty-state">No meetings linked to this project</div>`;
+ pMeetings.forEach(m=>{
+ h+=`<div class="chat-msg" style="margin-bottom:8px">
+ <div class="chat-msg-header"><span class="chat-msg-author"> ${m.title}</span><span class="chat-msg-ts">${m.date}${m.duration?' · '+m.duration+'m':''}</span></div>
+ ${m.phase?`<div style="margin-bottom:4px">${stageBadge(m.phase)}</div>`:''}
+ <div class="chat-msg-text">${m.notes||'No notes.'}</div>
+ <div style="margin-top:5px;display:flex;gap:4px;flex-wrap:wrap">${(m.tags||[]).map(t=>`<span class="mtag">${t}</span>`).join('')}</div>
+ </div>`;
+ });
+ h+=`<button class="btn-sm purple" style="margin-top:4px" onclick="openMeetModal()">+ Log a meeting</button></div>`;
+ }
+ if(tab==='tasks'){
+ const projTasks=getTasks().filter(t=>t.projectId===id);
+ const doneT=projTasks.filter(t=>t.status==='done');
+ const pct=projTasks.length?Math.round(doneT.length/projTasks.length*100):0;
+ const fc={planning:'#7F77DD',active:'#1E7A52',review:'#B06B0B',done:'#0F6E56',blocked:'#C0392B'}[p.stage]||'#888';
+ h+=`<div class="card">
+ <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+ <div class="sub-label" style="margin:0">Tasks on this project</div>
+ ${isMgr?`<button class="btn-action" onclick="openAssignToProj(${id})">+ Add task</button>`:''}
+ </div>
+ ${projTasks.length?`<div style="margin-bottom:12px">
+ <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--text2);margin-bottom:4px"><span>Completion</span><span>${doneT.length} / ${projTasks.length} tasks done</span></div>
+ <div style="height:8px;background:var(--border);border-radius:4px"><div style="height:100%;width:${pct}%;background:${fc};border-radius:4px"></div></div>
+ </div>`:''}`;
+ if(!projTasks.length){
+ h+=`<div class="empty-state">No tasks linked to this project yet</div>`;
+ } else {
+ projTasks.forEach(t=>{
+ const assignees=t.assignees||[];
+ const isDone=t.status==='done';
+ h+=`<div class="task-row-proj ${isDone?'done-card':''}">
+ <div style="display:flex;align-items:center;gap:8px;flex:1">
+ ${sDot(t.status)}
+ <span style="font-weight:500;font-size:13px;flex:1">${t.title}</span>
+ ${sBadge(t.status)}
+ </div>
+ <div style="font-size:12px;color:var(--text2);margin-top:4px;display:flex;gap:10px;flex-wrap:wrap">
+ ${assignees.length?`<span> ${assignees.join(', ')}</span>`:'<span style="color:var(--text3)">Unassigned</span>'}
+ ${t.due?`<span> ${t.due}</span>`:''}
+ </div>
+ ${t.managerNote?`<div class="task-note" style="margin-top:6px"><strong>Note:</strong> ${t.managerNote}</div>`:''}
+ ${t.handoffNote?`<div class="task-note" style="margin-top:6px"><strong>!</strong> ${t.handoffNote.left}</div>`:''}
+ ${t.completionNote?`<div class="task-note" style="background:var(--green-light);border-color:#9ED4BC;margin-top:6px"><strong></strong> ${t.completionNote}</div>`:''}
+ </div>`;
+ });
+ }
+ h+=`</div>`;
+ }
+ if(tab==='details'){
+ h+=`<div class="card"><div class="sub-label" style="margin-bottom:12px">Project details</div>
+ <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;font-size:13px">
+ <div><div class="sub-label">Start date</div><div style="margin-top:2px">${p.startDate||'—'}</div></div>
+ <div><div class="sub-label">Target end</div><div style="margin-top:2px">${p.targetEnd||'—'}</div></div>
+ <div><div class="sub-label">Actual end</div><div style="margin-top:2px">${p.actualEnd||'In progress'}</div></div>
+ <div><div class="sub-label">Progress</div><div style="margin-top:2px">${projPct(p.id)}% <span style="font-size:11px;color:var(--text3)">(auto-calculated from tasks)</span></div></div>
+ <div><div class="sub-label">Weight</div>
+ <div style="display:flex;align-items:center;gap:6px;margin-top:4px">
+ <div class="weight-bar">${[1,2,3,4,5].map(i=>`<span class="weight-pip" style="width:12px;height:12px;background:${i<=(p.weight||0)?wc:'var(--border)'}"></span>`).join('')}</div>
+ <span style="color:${wc};font-weight:600">${weightLabel(p.weight||0)} (${p.weight||0}/5)</span>
+ </div>
+ <div style="font-size:11px;color:var(--text3);margin-top:2px">Feeds into assigned members' productivity rate</div>
+ </div>
+ <div><div class="sub-label">Team</div><div style="margin-top:4px">${(p.members||[]).map(m=>`<span class="member-chip">${m}</span>`).join('')||'—'}</div></div>
+ <div style="grid-column:1/-1"><div class="sub-label">Notes</div><div style="margin-top:4px;color:var(--text2);line-height:1.6">${p.notes||'—'}</div></div>
+ </div>
+ ${isMgr?`<div style="margin-top:1rem;padding-top:1rem;border-top:1px solid var(--border)"><button class="btn-action" onclick="openEditProj(${p.id})">Edit project details</button></div>`:''}
+ </div>`;
+ }
+ mc(h);
+}
+
+function postChat(projId){
+ const inp=document.getElementById('chat-inp-'+projId);
+ const text=(inp?inp.value:'').trim(); if(!text)return;
+ const projects=getProjects(),p=projects.find(p=>p.id===projId); if(!p)return;
+ if(!p.chat)p.chat=[];
+ const now=new Date();
+ const ts=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0')+'-'+String(now.getDate()).padStart(2,'0')+' '+String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0');
+ p.chat.push({author:cu.name,text,ts});
+ saveProjects(projects); renderProjects();
+}
+function handleAttach(projId,input){
+ const projects=getProjects(),p=projects.find(p=>p.id===projId); if(!p||!input.files)return;
+ if(!p.attachments)p.attachments=[];
+ Array.from(input.files).forEach(f=>{p.attachments.push({name:f.name,size:f.size>1048576?(Math.round(f.size/1048576*10)/10)+'MB':Math.round(f.size/1024)+'KB',addedBy:cu.name});});
+ saveProjects(projects); renderProjects();
+}
+function delAttachment(projId,idx){
+ const projects=getProjects(),p=projects.find(p=>p.id===projId); if(!p)return;
+ p.attachments.splice(idx,1); saveProjects(projects); renderProjects();
+}
+
+// ── MEETINGS ──────────────────────────────────────────────────
+function renderMeetings(){
+ const meetings=getMeetings(), projects=getProjects();
+ const allTags=[...new Set(meetings.flatMap(m=>m.tags||[]))];
+ const projsWithMeetings=[...new Set(meetings.filter(m=>m.projectId).map(m=>m.projectId))];
+
+ // apply filters
+ let filtered=meetings;
+ if(meetProjFilter!=='all') filtered=filtered.filter(m=>meetProjFilter==='none'?!m.projectId:m.projectId===parseInt(meetProjFilter));
+ if(meetPhaseFilter!=='all') filtered=filtered.filter(m=>m.phase===meetPhaseFilter);
+ if(meetFilter!=='all') filtered=filtered.filter(m=>(m.tags||[]).includes(meetFilter));
+
+ let h=`<div class="section-header">
+ <div style="font-size:13px;color:var(--text2)">${meetings.length} meetings logged</div>
+ <button class="btn-action" onclick="openMeetModal()">+ Log meeting</button>
+ </div>
+ <div style="display:flex;gap:16px;flex-wrap:wrap;margin-bottom:12px">
+ <div>
+ <div class="sub-label" style="margin-bottom:4px">By project</div>
+ <div class="filter-row" style="margin:0;gap:4px">
+ <button class="filter-btn ${meetProjFilter==='all'?'active':''}" onclick="setMPF('all')">All</button>
+ <button class="filter-btn ${meetProjFilter==='none'?'active':''}" onclick="setMPF('none')">No project</button>
+ ${projsWithMeetings.map(pid=>{const proj=projects.find(p=>p.id===pid);return proj?`<button class="filter-btn ${meetProjFilter===String(pid)?'active':''}" onclick="setMPF('${pid}')">${proj.name.length>20?proj.name.slice(0,20)+'…':proj.name}</button>`:''}).join('')}
+ </div>
+ </div>
+ <div>
+ <div class="sub-label" style="margin-bottom:4px">By phase</div>
+ <div class="filter-row" style="margin:0;gap:4px">
+ ${['all','planning','active','review','done'].map(ph=>`<button class="filter-btn ${meetPhaseFilter===ph?'active':''}" onclick="setMPhF('${ph}')">${ph==='all'?'All phases':ph.charAt(0).toUpperCase()+ph.slice(1)}</button>`).join('')}
+ </div>
+ </div>
+ </div>
+ ${allTags.length?`<div class="filter-row">${['all',...allTags.slice(0,8)].map(t=>`<button class="filter-btn ${meetFilter===t?'active':''}" onclick="setMF('${t}')">${t==='all'?'All tags':t}</button>`).join('')}</div>`:''}`;
+
+ if(!filtered.length){ h+=`<div class="card"><div class="empty-state">No meetings match these filters</div></div>`; mc(h); return; }
+
+ filtered.forEach(m=>{
+ const proj=projects.find(p=>p.id===m.projectId);
+ h+=`<div class="meeting-card ${proj?'proj-linked':''}">
+ <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px">
+ <div style="flex:1">
+ <div class="meeting-title">${m.title}</div>
+ <div class="meeting-meta">
+ <span> ${m.date}</span>
+ ${m.duration?`<span> ${m.duration} min</span>`:''}
+ <span>👥 ${m.attendees}</span>
+ ${m.phase?`<span>${stageBadge(m.phase==='active'?'active':m.phase==='planning'?'planning':m.phase==='review'?'review':'done')}</span>`:''}
+ </div>
+ ${proj?`<div style="margin-bottom:6px"><span class="proj-badge"> ${proj.name}</span></div>`:''}
+ ${m.notes?`<div style="font-size:13px;color:var(--text2);margin-bottom:6px">${m.notes}</div>`:''}
+ <div class="meeting-tags">${(m.tags||[]).map(t=>`<span class="mtag">${t}</span>`).join('')}</div>
+ </div>
+ <div style="display:flex;gap:4px;flex-shrink:0">
+ <button class="btn-sm purple" onclick="openEditMeet(${m.id})">Edit</button>
+ <button class="btn-sm danger" onclick="delMeeting(${m.id})">x</button>
+ </div>
+ </div>
+ </div>`;
+ });
+ mc(h);
+}
+function setMPF(f){ meetProjFilter=f; renderMeetings(); }
+function setMPhF(f){ meetPhaseFilter=f; renderMeetings(); }
+function setMF(f){ meetFilter=f; renderMeetings(); }
+
+// ── PRODUCTIVITY ──────────────────────────────────────────────
+function renderProductivity(){
+ const taskTypes=getTaskTypes(), workLogs=getWorkLogs(), isMgr=cu.role==='manager';
+ // latest log per employee
+ const latestLog={};
+ workLogs.forEach(l=>{
+ if(!latestLog[l.employee]||l.date>latestLog[l.employee].date) latestLog[l.employee]=l;
+ });
+
+ function calcRate(log, empName){
+ if(!log) return {productiveMins:0,meetMins:0,adminMins:0,availMins:AVAIL_MINS_DAY,rate:0,weightBonus:0};
+ const productiveMins=log.entries.reduce((s,e)=>{
+ const tt=taskTypes.find(t=>t.id===e.typeId);
+ return s+(tt?tt.avgMins*e.qty:0);
+ },0);
+ // Weight bonus: each active project assigned to this person adds (weight-1)*10 mins of effort credit
+ const projects=getProjects();
+ const assignedProjects=projects.filter(p=>(p.members||[]).includes(empName)&&p.stage!=='done');
+ const weightBonus=assignedProjects.reduce((s,p)=>s+((p.weight||1)-1)*10,0);
+ const meetMins=log.meetMins||0, adminMins=log.adminMins||0;
+ const availMins=Math.max(AVAIL_MINS_DAY-meetMins-adminMins,0);
+ const totalProductive=productiveMins+weightBonus;
+ const rate=availMins>0?Math.min(Math.round(totalProductive/availMins*100),150):0;
+ return {productiveMins,meetMins,adminMins,availMins,rate,weightBonus};
+ }
+
+ const empList=isMgr?EMPLOYEES:[cu.name];
+ const empIdxMap={};
+ EMPLOYEES.forEach((e,i)=>empIdxMap[e]=i);
+
+ let h=``;
+ if(isMgr){
+ // team summary
+ const rates=EMPLOYEES.map(e=>calcRate(latestLog[e],e).rate);
+ const teamAvg=Math.round(rates.reduce((s,r)=>s+r,0)/rates.length);
+ h+=`<div class="stats-row">
+ <div class="stat-card"><div class="stat-num" style="color:var(--teal)">${teamAvg}%</div><div class="stat-label">Team avg rate</div></div>
+ <div class="stat-card"><div class="stat-num" style="color:var(--purple)">${taskTypes.length}</div><div class="stat-label">Task types</div></div>
+ <div class="stat-card"><div class="stat-num" style="color:var(--blue)">${Math.round(AVAIL_MINS_DAY/60*10)/10}h</div><div class="stat-label">Available/day</div></div>
+ </div>
+ <div class="section-header" style="margin-bottom:8px">
+ <div class="sub-label" style="margin:0">Individual productivity</div>
+ <button class="btn-action" onclick="openTaskTypeMgr()"> Manage task types</button>
+ </div>`;
+ } else {
+ const {rate,productiveMins,meetMins,adminMins,availMins,weightBonus}=calcRate(latestLog[cu.name],cu.name);
+ const color=rate>=90?'var(--green)':rate>=70?'var(--amber)':'var(--red)';
+ h+=`<div class="stats-row">
+ <div class="stat-card"><div class="stat-num" style="color:${color}">${rate}%</div><div class="stat-label">My rate (latest)</div></div>
+ <div class="stat-card"><div class="stat-num" style="color:var(--purple)">${productiveMins}</div><div class="stat-label">Productive mins</div></div>
+ <div class="stat-card"><div class="stat-num" style="color:var(--amber)">${meetMins}</div><div class="stat-label">Meeting mins</div></div>
+ <div class="stat-card"><div class="stat-num" style="color:var(--blue)">${availMins}</div><div class="stat-label">Available mins</div></div>
+ </div>
+ <div class="section-header">
+ <div class="sub-label" style="margin:0">My work logs</div>
+ <button class="btn-action" onclick="openLogWork()">+ Log today's work</button>
+ </div>`;
+ }
+
+ empList.forEach(emp=>{
+ const log=latestLog[emp];
+ const {rate,productiveMins,meetMins,adminMins,availMins,weightBonus}=calcRate(log,emp);
+ const color=rate>=90?'var(--green)':rate>=70?'var(--amber)':'var(--red)';
+ const idx=empIdxMap[emp]??0;
+ h+=`<div class="prod-person-card">
+ <div class="prod-header">
+ <div class="avatar av-${idx}" style="width:34px;height:34px;font-size:12px">${AVATARS[idx]||emp.slice(0,2).toUpperCase()}</div>
+ <div style="flex:1"><div style="font-weight:600;font-size:14px">${emp}</div><div style="font-size:12px;color:var(--text2)">${log?`Last logged: ${log.date}`:'No logs yet'}</div></div>
+ ${!isMgr?`<button class="btn-action" onclick="openLogWork()">+ Log today</button>`:''}
+ </div>
+ <div class="prod-rate-row">
+ <div style="font-size:13px;color:var(--text2);min-width:110px">Productivity rate</div>
+ <div class="prod-rate-bar"><div class="prod-rate-fill" style="width:${Math.min(rate,100)}%;background:${color}"></div></div>
+ <div class="prod-rate-pct" style="color:${color}">${rate}%</div>
+ </div>
+ <div style="font-size:12px;color:var(--text2);display:flex;gap:16px;margin-bottom:8px;flex-wrap:wrap">
+ <span> ${productiveMins} task mins</span>
+ ${weightBonus?`<span style="color:var(--purple)"> +${weightBonus} weight bonus</span>`:''}
+ <span> ${meetMins} in meetings</span>
+ <span> ${adminMins} admin</span>
+ <span> ${availMins} available</span>
+ </div>`;
+ if(log&&log.entries.length){
+ h+=`<table class="task-log-table"><thead><tr><th>Task type</th><th>Qty</th><th>Avg mins each</th><th>Total mins</th></tr></thead><tbody>`;
+ log.entries.forEach(e=>{
+ const tt=taskTypes.find(t=>t.id===e.typeId);
+ if(tt) h+=`<tr><td>${tt.name}</td><td>${e.qty}</td><td>${tt.avgMins}</td><td>${tt.avgMins*e.qty}</td></tr>`;
+ });
+ h+=`</tbody></table>`;
+ } else {
+ h+=`<div class="empty-state" style="padding:.75rem 0">No work logged for this period</div>`;
+ }
+ // history
+ const empLogs=workLogs.filter(l=>l.employee===emp).sort((a,b)=>b.date.localeCompare(a.date)).slice(0,5);
+ if(empLogs.length>1){
+ h+=`<div style="margin-top:10px"><div class="sub-label" style="margin-bottom:4px">Recent history</div><div style="display:flex;gap:6px;flex-wrap:wrap">`;
+ empLogs.forEach(l=>{
+ const r=calcRate(l,emp).rate;
+ const c=r>=90?'var(--green)':r>=70?'var(--amber)':'var(--red)';
+ h+=`<div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:4px 10px;font-size:12px"><div style="color:var(--text2)">${l.date}</div><div style="font-weight:600;color:${c}">${r}%</div></div>`;
+ });
+ h+=`</div></div>`;
+ }
+ h+=`</div>`;
+ });
+
+ if(isMgr){
+ h+=`<div class="card" style="margin-top:4px"><div style="font-size:13px;font-weight:500;margin-bottom:6px">How productivity is calculated</div>
+ <div style="font-size:13px;color:var(--text2);line-height:1.8">
+ <strong>Rate</strong> = productive minutes ÷ available minutes<br>
+ <strong>Productive minutes</strong> = Σ (task units completed × avg minutes per task type)<br>
+ <strong>Available minutes</strong> = 405 min/day (6.75h) − meeting minutes − admin minutes<br>
+ Target: ≥ 99%. Update avg times yearly via "Manage task types".
+ </div></div>`;
+ }
+ mc(h);
+}
+
+// ── TASK MODAL ────────────────────────────────────────────────
+function buildAssigneeCheckboxes(selected){
+ return EMPLOYEES.map(e=>`<label style="display:flex;align-items:center;gap:5px;font-size:13px;cursor:pointer;padding:3px 8px;border-radius:4px;background:${(selected||[]).includes(e)?'var(--purple-light)':'var(--surface2)'};border:1px solid ${(selected||[]).includes(e)?'var(--purple-mid)':'var(--border)'}"><input type="checkbox" value="${e}" ${(selected||[]).includes(e)?'checked':''} onchange="this.closest('label').style.background=this.checked?'var(--purple-light)':'var(--surface2)';this.closest('label').style.borderColor=this.checked?'var(--purple-mid)':'var(--border)'" style="accent-color:var(--purple)"> ${e}</label>`).join('');
+}
+function getCheckedAssignees(){
+ return Array.from(document.querySelectorAll('#f-assignees-wrap input:checked')).map(i=>i.value);
+}
+function openAssign(forEmp){
+ document.getElementById('f-assignees-wrap').innerHTML=buildAssigneeCheckboxes(forEmp?[forEmp]:[]);
+ const psel=document.getElementById('f-project-link');
+ psel.innerHTML=`<option value="">— No project —</option>`+getProjects().map(p=>`<option value="${p.id}">${p.name}</option>`).join('');
+ ['f-title','f-note'].forEach(id=>document.getElementById(id).value='');
+ document.getElementById('f-due').value='';
+ document.getElementById('assign-modal').classList.add('open');
+}
+function openAssignFor(emp){ openAssign(emp); }
+function openAssignToProj(projId){
+ openAssign();
+ setTimeout(()=>{
+ const sel=document.getElementById('f-project-link');
+ if(sel) sel.value=projId;
+ },50);
+}
+function saveTask(){
+ const title=document.getElementById('f-title').value.trim();
+ if(!title){alert('Please enter a task title.');return;}
+ const assignees=getCheckedAssignees();
+ if(!assignees.length){alert('Please assign to at least one person.');return;}
+ const tasks=getTasks();
+ const pid=document.getElementById('f-project-link').value;
+ tasks.push({id:nid(tasks),title,assignees,projectId:pid?parseInt(pid):null,due:document.getElementById('f-due').value,status:'todo',managerNote:document.getElementById('f-note').value.trim(),handoffNote:null,completionNote:null,createdAt:new Date().toISOString().slice(0,10)});
+ saveTasks(tasks); closeModal('assign-modal'); render();
+}
+function openHandoff(id){
+ handoffTaskId=id;
+ const sel=document.getElementById('hf-reassign');
+ sel.innerHTML=`<option value="">Manager decides</option>`+EMPLOYEES.map(e=>`<option value="${e}">${e}</option>`).join('');
+ document.getElementById('hf-done').value=''; document.getElementById('hf-left').value='';
+ document.getElementById('handoff-modal').classList.add('open');
+}
+function saveHandoff(){
+ const done=document.getElementById('hf-done').value.trim(), left=document.getElementById('hf-left').value.trim();
+ if(!done||!left){alert('Please fill in both fields.');return;}
+ const tasks=getTasks(), t=tasks.find(t=>t.id===handoffTaskId);
+ if(t){t.status='flagged';t.handoffNote={done,left,reassign:document.getElementById('hf-reassign').value};}
+ saveTasks(tasks); closeModal('handoff-modal'); render();
+}
+function openComplete(id){ completeTaskId=id; document.getElementById('cm-note').value=''; document.getElementById('complete-modal').classList.add('open'); }
+function saveComplete(){
+ const tasks=getTasks(), t=tasks.find(t=>t.id===completeTaskId);
+ if(t){t.status='done';t.completionNote=document.getElementById('cm-note').value.trim();}
+ saveTasks(tasks); closeModal('complete-modal'); render();
+}
+function ackHandoff(id){ const tasks=getTasks(), t=tasks.find(t=>t.id===id); if(t)t.status='inprogress'; saveTasks(tasks); render(); }
+function mgrComplete(id){ const tasks=getTasks(), t=tasks.find(t=>t.id===id); if(t){t.status='done';t.completionNote=t.completionNote||'Marked done by manager.';} saveTasks(tasks); render(); }
+function delTask(id){ if(!confirm('Delete this task?'))return; saveTasks(getTasks().filter(t=>t.id!==id)); render(); }
+
+// ── MEETING MODAL ─────────────────────────────────────────────
+function populateProjSelect(selId, currentVal){
+ const s=document.getElementById(selId);
+ s.innerHTML=`<option value="">— None —</option>`+getProjects().map(p=>`<option value="${p.id}" ${p.id===currentVal?'selected':''}>${p.name}</option>`).join('');
+}
+function openMeetModal(){
+ editMeetingId=null;
+ document.getElementById('meeting-modal-title').textContent='Log a meeting';
+ ['m-title','m-attendees','m-notes','m-tags'].forEach(id=>document.getElementById(id).value='');
+ document.getElementById('m-date').value=new Date().toISOString().slice(0,10);
+ document.getElementById('m-duration').value='';
+ document.getElementById('m-phase').value='';
+ populateProjSelect('m-project-link',null);
+ document.getElementById('meeting-modal').classList.add('open');
+}
+function openEditMeet(id){
+ const m=getMeetings().find(m=>m.id===id); if(!m)return;
+ editMeetingId=id;
+ document.getElementById('meeting-modal-title').textContent='Edit meeting';
+ document.getElementById('m-title').value=m.title;
+ document.getElementById('m-date').value=m.date;
+ document.getElementById('m-duration').value=m.duration||'';
+ document.getElementById('m-attendees').value=m.attendees;
+ document.getElementById('m-notes').value=m.notes||'';
+ document.getElementById('m-tags').value=(m.tags||[]).join(', ');
+ document.getElementById('m-phase').value=m.phase||'';
+ populateProjSelect('m-project-link',m.projectId);
+ document.getElementById('meeting-modal').classList.add('open');
+}
+function saveMeeting(){
+ const title=document.getElementById('m-title').value.trim();
+ if(!title){alert('Please enter a meeting title.');return;}
+ const meetings=getMeetings();
+ const pid=document.getElementById('m-project-link').value;
+ const entry={
+ id:editMeetingId||nid(meetings),title,
+ date:document.getElementById('m-date').value,
+ duration:parseInt(document.getElementById('m-duration').value)||0,
+ attendees:document.getElementById('m-attendees').value.trim(),
+ projectId:pid?parseInt(pid):null,
+ phase:document.getElementById('m-phase').value,
+ notes:document.getElementById('m-notes').value.trim(),
+ tags:document.getElementById('m-tags').value.split(',').map(t=>t.trim()).filter(Boolean)
+ };
+ if(editMeetingId){const i=meetings.findIndex(m=>m.id===editMeetingId);if(i>-1)meetings[i]=entry;}
+ else meetings.unshift(entry);
+ saveMeetings(meetings); closeModal('meeting-modal'); render();
+}
+function delMeeting(id){ if(!confirm('Delete this meeting record?'))return; saveMeetings(getMeetings().filter(m=>m.id!==id)); render(); }
+function toggleAction(meetId, actionIdx){
+  const meetings=getMeetings(), m=meetings.find(m=>m.id===meetId); if(!m||!m.actionItems) return;
+  m.actionItems[actionIdx].done=!m.actionItems[actionIdx].done;
+  saveMeetings(meetings); render();
+}
+
+// ── PROJECT MODAL ─────────────────────────────────────────────
+function buildMemberCheckboxes(selected){
+ return EMPLOYEES.map(e=>`
+ <label style="display:flex;align-items:center;gap:5px;font-size:13px;cursor:pointer;padding:3px 6px;border-radius:4px;background:${(selected||[]).includes(e)?'var(--purple-light)':'var(--surface2)'};border:1px solid ${(selected||[]).includes(e)?'var(--purple-mid)':'var(--border)'}">
+ <input type="checkbox" value="${e}" ${(selected||[]).includes(e)?'checked':''} onchange="updateMemberCheckbox(this)" style="accent-color:var(--purple)"> ${e}
+ </label>`).join('');
+}
+function updateMemberCheckbox(el){
+ el.closest('label').style.background=el.checked?'var(--purple-light)':'var(--surface2)';
+ el.closest('label').style.borderColor=el.checked?'var(--purple-mid)':'var(--border)';
+}
+function getCheckedMembers(){
+ return Array.from(document.querySelectorAll('#p-members-checkboxes input:checked')).map(i=>i.value);
+}
+function openProjModal(){
+ document.getElementById('proj-modal-title').textContent='Add project';
+ document.getElementById('p-edit-id').value='';
+ ['p-name','p-notes','p-actual'].forEach(id=>document.getElementById(id).value='');
+ document.getElementById('p-stage').value='planning';
+ document.getElementById('p-pct').value='0';
+ document.getElementById('p-weight').value='3';
+ document.getElementById('p-start').value='';
+ document.getElementById('p-target').value='';
+ document.getElementById('p-members-checkboxes').innerHTML=buildMemberCheckboxes([]);
+ document.getElementById('project-modal').classList.add('open');
+}
+function openEditProj(id){
+ const p=getProjects().find(p=>p.id===id); if(!p)return;
+ document.getElementById('proj-modal-title').textContent='Edit project';
+ document.getElementById('p-edit-id').value=id;
+ document.getElementById('p-name').value=p.name||'';
+ document.getElementById('p-stage').value=p.stage||'planning';
+ // pct is now auto-calculated from tasks — no manual field
+ document.getElementById('p-weight').value=p.weight||3;
+ document.getElementById('p-start').value=p.startDate||'';
+ document.getElementById('p-target').value=p.targetEnd||'';
+ document.getElementById('p-actual').value=p.actualEnd||'';
+ document.getElementById('p-notes').value=p.notes||'';
+ document.getElementById('p-members-checkboxes').innerHTML=buildMemberCheckboxes(p.members||[]);
+ document.getElementById('project-modal').classList.add('open');
+}
+function saveProject(){
+ const name=document.getElementById('p-name').value.trim(); if(!name){alert('Please enter a project name.');return;}
+ const editId=document.getElementById('p-edit-id').value;
+ const projects=getProjects();
+ const entry={
+ name, stage:document.getElementById('p-stage').value,
+ pct:parseInt(document.getElementById('p-pct').value)||0,
+ weight:parseInt(document.getElementById('p-weight').value)||3,
+ members:getCheckedMembers(),
+ startDate:document.getElementById('p-start').value,
+ targetEnd:document.getElementById('p-target').value,
+ actualEnd:document.getElementById('p-actual').value,
+ notes:document.getElementById('p-notes').value.trim(),
+ };
+ if(editId){
+ const idx=projects.findIndex(p=>p.id===parseInt(editId));
+ if(idx>-1){ entry.id=parseInt(editId); entry.chat=projects[idx].chat||[]; entry.attachments=projects[idx].attachments||[]; projects[idx]=entry; }
+ } else {
+ entry.id=nid(projects); entry.chat=[]; entry.attachments=[];
+ projects.push(entry);
+ }
+ saveProjects(projects); closeModal('project-modal'); render();
+}
+function delProject(id){ if(!confirm('Delete this project?'))return; saveProjects(getProjects().filter(p=>p.id!==id)); openProjId=null; render(); }
+
+// ── WORK LOG MODAL ────────────────────────────────────────────
+let workRowCount=0;
+function openLogWork(){
+ workRowCount=0;
+ document.getElementById('lw-date').value=new Date().toISOString().slice(0,10);
+ document.getElementById('lw-meet-mins').value='';
+ document.getElementById('lw-admin-mins').value='';
+ document.getElementById('lw-task-rows').innerHTML='';
+ addWorkRow();
+ document.getElementById('logwork-modal').classList.add('open');
+}
+function addWorkRow(){
+ const types=getTaskTypes();
+ const div=document.createElement('div');
+ div.style.cssText='display:flex;gap:8px;align-items:flex-end;margin-bottom:8px';
+ div.id='wr-'+workRowCount;
+ div.innerHTML=`
+ <div style="flex:2">
+ <label class="fl">Task type</label>
+ <select class="fs" id="wt-type-${workRowCount}">${types.map(t=>`<option value="${t.id}">${t.name} (${t.avgMins}m avg)</option>`).join('')}</select>
+ </div>
+ <div style="flex:1">
+ <label class="fl">Qty completed</label>
+ <input class="fi" type="number" min="0" id="wt-qty-${workRowCount}" placeholder="0">
+ </div>
+ <button class="btn-sm danger" style="margin-bottom:1px" onclick="this.parentElement.remove()">x</button>`;
+ document.getElementById('lw-task-rows').appendChild(div);
+ workRowCount++;
+}
+function saveWorkLog(){
+ const date=document.getElementById('lw-date').value;
+ const entries=[];
+ document.getElementById('lw-task-rows').querySelectorAll('[id^="wr-"]').forEach((row,i)=>{
+ const typeEl=row.querySelector('[id^="wt-type-"]'), qtyEl=row.querySelector('[id^="wt-qty-"]');
+ if(typeEl&&qtyEl){
+ const qty=parseInt(qtyEl.value)||0;
+ if(qty>0) entries.push({typeId:parseInt(typeEl.value),qty});
+ }
+ });
+ const logs=getWorkLogs();
+ const existing=logs.findIndex(l=>l.employee===cu.name&&l.date===date);
+ const entry={id:existing>-1?logs[existing].id:nid(logs),employee:cu.name,date,entries,meetMins:parseInt(document.getElementById('lw-meet-mins').value)||0,adminMins:parseInt(document.getElementById('lw-admin-mins').value)||0};
+ if(existing>-1) logs[existing]=entry; else logs.push(entry);
+ saveWorkLogs(logs); closeModal('logwork-modal'); render();
+}
+
+// ── TASK TYPE MANAGER ─────────────────────────────────────────
+function openTaskTypeMgr(){
+ renderTaskTypeList();
+ document.getElementById('tt-name').value='';
+ document.getElementById('tt-mins').value='';
+ document.getElementById('tasktype-modal').classList.add('open');
+}
+function renderTaskTypeList(){
+ const types=getTaskTypes();
+ document.getElementById('tt-list').innerHTML=types.map(t=>`
+ <div class="task-type-mgr-row">
+ <span style="flex:1;font-weight:500">${t.name}</span>
+ <span style="color:var(--text2);font-size:12px;min-width:80px"> ${t.avgMins} min avg</span>
+ <button class="btn-sm danger" onclick="delTaskType(${t.id})">x</button>
+ </div>`).join('');
+}
+function addTaskType(){
+ const name=document.getElementById('tt-name').value.trim(), mins=parseInt(document.getElementById('tt-mins').value)||0;
+ if(!name||!mins){alert('Enter a name and average minutes.');return;}
+ const types=getTaskTypes();
+ types.push({id:nid(types),name,avgMins:mins});
+ saveTaskTypes(types); document.getElementById('tt-name').value=''; document.getElementById('tt-mins').value='';
+ renderTaskTypeList();
+}
+function delTaskType(id){ if(!confirm('Delete this task type?'))return; saveTaskTypes(getTaskTypes().filter(t=>t.id!==id)); renderTaskTypeList(); }
+
+// ── INTAKE / REQUESTS ────────────────────────────────────────
+let intakeFilter='pending';
+
+function renderIntake(){
+  const requests=getIntakeRequests();
+  const filtered=intakeFilter==='all'?requests:requests.filter(r=>r.status===intakeFilter);
+  const pending=requests.filter(r=>r.status==='pending').length;
+
+  let h=`<div class="section-header">
+    <div>
+      <div style="font-size:19px;font-weight:400;margin-bottom:4px;font-family:'DM Serif Display',serif;color:var(--navy)">Intake / Requests</div>
+      <div style="font-size:13px;color:var(--text2)">Requests from other departments. Review, approve or decline.</div>
+    </div>
+    <button class="btn-action secondary" onclick="showIntakeFormLink()">Share request form</button>
+  </div>
+  <div class="filter-row">
+    <button class="filter-btn ${intakeFilter==='all'?'active':''}" onclick="setIntakeFilter('all')">All</button>
+    <button class="filter-btn ${intakeFilter==='pending'?'active':''}" onclick="setIntakeFilter('pending')">Pending${pending?' ('+pending+')':''}</button>
+    <button class="filter-btn ${intakeFilter==='approved'?'active':''}" onclick="setIntakeFilter('approved')">Approved</button>
+    <button class="filter-btn ${intakeFilter==='declined'?'active':''}" onclick="setIntakeFilter('declined')">Declined</button>
+  </div>`;
+
+  if(!filtered.length){
+    h+=`<div class="card"><div class="empty-state">No requests in this category</div></div>`;
+  } else {
+    filtered.forEach(r=>{
+      const priorityBadge = r.priority==='high'?'badge-blocked':r.priority==='medium'?'badge-review':'badge-done';
+      h+=`<div class="intake-card priority-${r.priority||'medium'}" id="intake-card-${r.id}">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px">
+          <div style="flex:1">
+            <div style="font-weight:600;font-size:14px;margin-bottom:4px;font-family:'DM Serif Display',serif;color:var(--navy)">${r.title}</div>
+            <div class="intake-meta">
+              <span>${r.dept}</span>
+              <span>${r.contact}</span>
+              <span>${r.submittedAt}</span>
+              <span class="badge ${priorityBadge}">${r.priority} priority</span>
+            </div>
+            <div style="font-size:13px;color:var(--text2);line-height:1.6;margin-bottom:8px">${r.description}</div>
+            ${r.declineReason?`<div class="task-note"><strong>Declined:</strong> ${r.declineReason}</div>`:''}
+          </div>
+          <div style="flex-shrink:0;text-align:right">
+            ${r.status==='pending'
+              ?`<span class="status-pill-pending">Pending</span>`
+              :r.status==='approved'
+              ?`<span class="status-pill-approved">Approved${r.assignedTo?' → '+r.assignedTo:''}</span>`
+              :`<span class="status-pill-declined">Declined</span>`}
+          </div>
+        </div>`;
+
+      if(r.status==='pending'){
+        h+=`<div class="intake-actions" style="flex-direction:column;gap:10px">
+          <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+            <span style="font-size:12px;font-weight:600;color:var(--navy)">Assign to:</span>
+            <select id="intake-assignee-${r.id}" class="fs" style="padding:5px 10px;font-size:13px;width:auto;min-width:160px">
+              <option value="">Select team member...</option>
+              ${EMPLOYEES.map(e=>`<option value="${e}">${e}</option>`).join('')}
+            </select>
+          </div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <button class="btn-sm success" onclick="intakeApproveTask(${r.id})">Approve as task</button>
+            <button class="btn-sm purple" onclick="intakeApproveProject(${r.id})">Approve as project</button>
+            <button class="btn-sm danger" onclick="intakeDecline(${r.id})">Decline</button>
+          </div>
+        </div>`;
+      }
+
+      h+=`</div>`;
+    });
+  }
+  mc(h);
+}
+function setIntakeFilter(f){ intakeFilter=f; renderIntake(); }
+
+function approveIntakeAsTask(id){
+  const requests=getIntakeRequests(), r=requests.find(r=>r.id===id); if(!r)return;
+  const assignee=document.getElementById('intake-assignee-'+id);
+  const matched=assignee?assignee.value:'';
+  if(!matched){alert('Please select a team member to assign this to.');return;}
+  r.status='approved'; r.assignedTo=matched;
+  saveIntakeRequests(requests);
+  const tasks=getTasks();
+  tasks.push({id:nid(tasks),title:r.title,assignees:[matched],projectId:null,due:'',status:'todo',
+    managerNote:'Intake from '+r.dept+' ('+r.contact+'): '+r.description,
+    handoffNote:null,completionNote:null,createdAt:new Date().toISOString().slice(0,10)});
+  saveTasks(tasks);
+  alert('Approved and assigned to '+matched+' as a new task.');
+  renderIntake();
+}
+function approveIntakeAsProject(id){
+  const requests=getIntakeRequests(), r=requests.find(r=>r.id===id); if(!r)return;
+  const assignee=document.getElementById('intake-assignee-'+id);
+  const matched=assignee?assignee.value:'';
+  r.status='approved'; r.assignedTo=matched||'Unassigned';
+  saveIntakeRequests(requests);
+  openProjModal();
+  setTimeout(()=>{
+    document.getElementById('p-name').value=r.title;
+    document.getElementById('p-notes').value='Requested by '+r.dept+' ('+r.contact+'): '+r.description;
+    if(matched){
+      document.querySelectorAll('#p-members-checkboxes input').forEach(b=>{
+        if(b.value===matched){b.checked=true;b.dispatchEvent(new Event('change'));}
+      });
+    }
+  },80);
+}
+function intakeApproveTask(id){ approveIntakeAsTask(id); }
+function intakeApproveProject(id){ approveIntakeAsProject(id); }
+function intakeDecline(id){ declineIntake(id); }
+function declineIntake(id){
+ const reason=prompt('Reason for declining (will be visible in the record):');
+ if(reason===null)return;
+ const requests=getIntakeRequests(), r=requests.find(r=>r.id===id); if(!r)return;
+ r.status='declined'; r.declineReason=reason||'No capacity at this time.';
+ saveIntakeRequests(requests); renderIntake();
+}
+function showIntakeFormLink(){
+ const url=window.location.href.split('?')[0]+'?form=intake';
+ prompt('Share this link with other departments so they can submit a request:',url);
+}
+
+// ── INTAKE PUBLIC FORM ────────────────────────────────────────
+function checkIntakeForm(){
+ if(window.location.search.includes('form=intake')){
+ document.getElementById('login-screen').style.display='none';
+ document.getElementById('app').style.display='none';
+ document.body.innerHTML=`<div class="form-page">
+ <div class="form-page-card">
+ <div style="font-size:26px;font-weight:400;margin-bottom:4px;font-family:'DM Serif Display',serif;color:var(--navy)">Submit a Request</div>
+ <div style="font-size:13px;color:var(--text2);margin-bottom:1.5rem">Fill out this form to submit a request to the Operations team. They will review and get back to you.</div>
+ <div class="fg"><label class="fl">Request title</label><input class="fi" id="pub-title" placeholder="Brief title for your request"></div>
+ <div class="fg"><label class="fl">Your department</label><input class="fi" id="pub-dept" placeholder="e.g. Finance, HR, Claims"></div>
+ <div class="fg"><label class="fl">Your name & contact</label><input class="fi" id="pub-contact" placeholder="e.g. Lisa Torres, lisa@company.com"></div>
+ <div class="fg"><label class="fl">Priority</label>
+ <select class="fs" id="pub-priority"><option value="low">Low</option><option value="medium" selected>Medium</option><option value="high">High</option></select>
+ </div>
+ <div class="fg"><label class="fl">Description</label><textarea class="ft" id="pub-desc" placeholder="Describe what you need and why it's important…" style="min-height:100px"></textarea></div>
+ <button class="btn-primary" onclick="submitPublicForm()" style="margin-top:.5rem">Submit request</button>
+ <div id="pub-success" style="display:none;margin-top:1rem;padding:12px;background:var(--green-light);border:1px solid #9ED4BC;border-radius:var(--radius-sm);color:var(--green);font-weight:500;text-align:center"> Request submitted! The Ops team will review it shortly.</div>
+ </div>
+ </div>`;
+ }
+}
+function submitPublicForm(){
+ const title=document.getElementById('pub-title').value.trim();
+ const dept=document.getElementById('pub-dept').value.trim();
+ const contact=document.getElementById('pub-contact').value.trim();
+ const desc=document.getElementById('pub-desc').value.trim();
+ if(!title||!dept||!contact){alert('Please fill in all required fields.');return;}
+ const requests=getIntakeRequests();
+ requests.push({id:nid(requests),title,dept,contact,priority:document.getElementById('pub-priority').value,description:desc,status:'pending',submittedAt:new Date().toISOString().slice(0,10),declineReason:''});
+ saveIntakeRequests(requests);
+ document.getElementById('pub-success').style.display='block';
+ ['pub-title','pub-dept','pub-contact','pub-desc'].forEach(id=>document.getElementById(id).value='');
+}
+
+// ── GLOBAL SEARCH ────────────────────────────────────────────
+function runSearch(q){
+  const box=document.getElementById('search-results');
+  if(!q||q.length<2){ box.classList.remove('open'); return; }
+  const lq=q.toLowerCase();
+  const tasks=getTasks(), projects=getProjects(), meetings=getMeetings();
+  const results=[];
+  tasks.filter(t=>t.title.toLowerCase().includes(lq)).slice(0,4).forEach(t=>{
+    results.push({type:'Task',title:t.title,action:`activePage='tasks';render()`});
+  });
+  projects.filter(p=>p.name.toLowerCase().includes(lq)||( p.notes&&p.notes.toLowerCase().includes(lq))).slice(0,4).forEach(p=>{
+    results.push({type:'Project',title:p.name,action:`openProjId=${p.id};activePage='projects';render()`});
+  });
+  meetings.filter(m=>m.title.toLowerCase().includes(lq)||(m.notes&&m.notes.toLowerCase().includes(lq))).slice(0,4).forEach(m=>{
+    results.push({type:'Meeting',title:m.title,action:`activePage='meetings';render()`});
+  });
+  if(!results.length){
+    box.innerHTML=`<div class="search-no-results">No results for "${q}"</div>`;
+  } else {
+    box.innerHTML=results.map(r=>`<div class="search-result-item" onclick="closeSearch();${r.action}">
+      <div class="search-result-type">${r.type}</div>
+      <div class="search-result-title">${r.title}</div>
+    </div>`).join('');
+  }
+  box.classList.add('open');
+}
+function closeSearch(){
+  const box=document.getElementById('search-results');
+  if(box) box.classList.remove('open');
+}
+
+// ── ONBOARDING TEMPLATES ──────────────────────────────────────
+function getTemplates(){ return get('templates')||[
+  {id:1,name:'New BA Onboarding',tasks:[
+    {title:'Complete HR paperwork and system access requests',avgMins:60},
+    {title:'Shadow a senior BA for one week',avgMins:420},
+    {title:'Review past project documentation and meeting notes',avgMins:120},
+    {title:'Set up Monday.com and Ops Hub access',avgMins:30},
+    {title:'Meet with manager to review team processes',avgMins:60},
+    {title:'Complete first independent task with manager review',avgMins:120},
+  ]},
+  {id:2,name:'New Project Kickoff',tasks:[
+    {title:'Define project scope and objectives',avgMins:90},
+    {title:'Identify stakeholders and assign team members',avgMins:45},
+    {title:'Set project timeline and milestones',avgMins:60},
+    {title:'Create initial project documentation',avgMins:90},
+    {title:'Schedule kickoff meeting with all stakeholders',avgMins:30},
+  ]},
+];}
+function saveTemplates(t){ set('templates',t); }
+
+function renderOnboarding(){
+  const templates=getTemplates(), isMgr=cu.role==='manager';
+  let h=`<div style="font-size:19px;font-weight:400;font-family:'DM Serif Display',serif;color:var(--navy);margin-bottom:4px">Onboarding Templates</div>
+  <div style="font-size:13px;color:var(--text2);margin-bottom:1.25rem">Create reusable task templates. Fire them to instantly create a batch of tasks for a new team member or project.</div>`;
+  if(isMgr) h+=`<div style="margin-bottom:1rem"><button class="btn-action" onclick="openTemplateModal()">+ New template</button></div>`;
+  if(!templates.length){ h+=`<div class="card"><div class="empty-state">No templates yet</div></div>`; mc(h); return; }
+  templates.forEach(tmpl=>{
+    h+=`<div class="template-card">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+        <div style="font-size:15px;font-weight:400;font-family:'DM Serif Display',serif;color:var(--navy)">${tmpl.name}</div>
+        <div style="display:flex;gap:6px">
+          ${isMgr?`<button class="btn-action" onclick="fireTemplate(${tmpl.id})">Fire template</button>`:''}
+          ${isMgr?`<button class="btn-sm danger" onclick="delTemplate(${tmpl.id})">Delete</button>`:''}
+        </div>
+      </div>
+      <div style="font-size:12px;color:var(--text3);margin-bottom:8px">${tmpl.tasks.length} tasks · Est. ${Math.round(tmpl.tasks.reduce((s,t)=>s+t.avgMins,0)/60*10)/10} hrs total</div>
+      ${tmpl.tasks.map(t=>`<div class="template-task-row">
+        <span style="width:6px;height:6px;border-radius:50%;background:var(--accent);flex-shrink:0;margin-top:5px"></span>
+        <span>${t.title}</span>
+        <span style="color:var(--text3);font-size:11px;margin-left:auto">${t.avgMins}m</span>
+      </div>`).join('')}
+    </div>`;
+  });
+  mc(h);
+}
+
+function fireTemplate(id){
+  const tmpl=getTemplates().find(t=>t.id===id); if(!tmpl) return;
+  const assignee=prompt('Assign tasks to — enter exact name ('+EMPLOYEES.join(', ')+')');
+  if(!assignee||!EMPLOYEES.includes(assignee)){ if(assignee!==null) alert('Name not found. Use exact name from the list.'); return; }
+  const tasks=getTasks();
+  tmpl.tasks.forEach(t=>{
+    tasks.push({id:nid(tasks),title:t.title,assignees:[assignee],projectId:null,due:'',status:'todo',managerNote:'From template: '+tmpl.name,handoffNote:null,completionNote:null,createdAt:new Date().toISOString().slice(0,10)});
+  });
+  saveTasks(tasks);
+  alert(tmpl.tasks.length+' tasks created and assigned to '+assignee);
+  render();
+}
+function delTemplate(id){ if(!confirm('Delete this template?'))return; saveTemplates(getTemplates().filter(t=>t.id!==id)); render(); }
+
+let editTemplateId=null;
+function openTemplateModal(){
+  editTemplateId=null;
+  document.getElementById('tmpl-name').value='';
+  document.getElementById('tmpl-task-rows').innerHTML='';
+  addTemplateTaskRow();
+  document.getElementById('template-modal').classList.add('open');
+}
+function addTemplateTaskRow(title='',mins=30){
+  const div=document.createElement('div');
+  div.style.cssText='display:flex;gap:6px;align-items:center;margin-bottom:6px';
+  div.innerHTML=`<input class="fi" placeholder="Task description..." value="${title}" style="flex:3;font-size:13px;padding:6px 10px">
+    <input class="fi" type="number" value="${mins}" min="5" style="flex:1;font-size:13px;padding:6px 8px" placeholder="Mins">
+    <button class="btn-sm danger" onclick="this.parentElement.remove()" style="padding:5px 8px">x</button>`;
+  document.getElementById('tmpl-task-rows').appendChild(div);
+}
+function saveTemplate(){
+  const name=document.getElementById('tmpl-name').value.trim();
+  if(!name){alert('Enter a template name.');return;}
+  const rows=document.querySelectorAll('#tmpl-task-rows > div');
+  const tasks=[];
+  rows.forEach(row=>{
+    const inputs=row.querySelectorAll('input');
+    const title=inputs[0]?inputs[0].value.trim():'';
+    const avgMins=parseInt(inputs[1]?inputs[1].value:30)||30;
+    if(title) tasks.push({title,avgMins});
+  });
+  if(!tasks.length){alert('Add at least one task.');return;}
+  const templates=getTemplates();
+  templates.push({id:nid(templates),name,tasks});
+  saveTemplates(templates); closeModal('template-modal'); render();
+}
+
+// ── HELPERS ───────────────────────────────────────────────────
+function sDot(s){const c={todo:'#378ADD',inprogress:'#7F77DD',flagged:'#B06B0B',done:'#1E7A52'};return `<span style="width:8px;height:8px;border-radius:50%;background:${c[s]||'#ccc'};display:inline-block;flex-shrink:0"></span>`;}
+function sBadge(s){const m={todo:'To do',inprogress:'In progress',flagged:'Needs attention',done:'Done'};const c={todo:'badge-todo',inprogress:'badge-inprogress',flagged:'badge-flagged',done:'badge-done'};return `<span class="badge ${c[s]||''}">${m[s]||s}</span>`;}
+function stageBadge(s){const m={planning:'Planning',active:'Active',review:'Review',done:'Done',blocked:'Blocked'};const c={planning:'badge-planning',active:'badge-active',review:'badge-review',done:'badge-done',blocked:'badge-blocked'};return `<span class="badge ${c[s]||''}">${m[s]||s}</span>`;}
+function mc(h){document.getElementById('main-content').innerHTML=h;}
+
+
+// ── ANALYTICS DASHBOARD ────────────────────────────────────────
+function renderAnalytics(){
+  const projects = getProjects();
+  const tasks = getTasks();
+  const employees = ['Megan R.','Sonya M.','Jordan K.','Chris B.'];
+
+  // ── Data prep ──────────────────────────────────────────────
+  // 1. Timeline: planned duration vs days elapsed (active projects)
+  const timelineData = projects.filter(p=>p.startDate&&p.targetEnd).map(p=>{
+    const start=new Date(p.startDate), target=new Date(p.targetEnd);
+    const planned=Math.round((target-start)/86400000);
+    const elapsed=p.activeStarted?Math.round((Date.now()-new Date(p.activeStarted))/86400000):0;
+    const pct=projPct(p.id);
+    return {name:p.name.length>22?p.name.slice(0,22)+'…':p.name, planned, elapsed, pct, stage:p.stage};
+  }).slice(0,6);
+
+  // 2. Weight per person
+  const weightByPerson = employees.map(emp=>{
+    const assigned=projects.filter(p=>(p.members||[]).includes(emp)&&p.stage!=='done');
+    const totalWeight=assigned.reduce((s,p)=>s+(p.weight||0),0);
+    return {name:emp.split(' ')[0], totalWeight, count:assigned.length};
+  });
+
+  // 3. Status distribution
+  const stageCounts={planning:0,active:0,review:0,blocked:0,done:0};
+  projects.forEach(p=>{stageCounts[p.stage]=(stageCounts[p.stage]||0)+1;});
+
+  // 4. Task completion by project
+  const taskData=projects.filter(p=>{
+    const pt=tasks.filter(t=>t.projectId===p.id);
+    return pt.length>0;
+  }).map(p=>{
+    const pt=tasks.filter(t=>t.projectId===p.id);
+    const done=pt.filter(t=>t.status==='done').length;
+    return {name:p.name.length>20?p.name.slice(0,20)+'…':p.name, done, total:pt.length, pct:Math.round(done/pt.length*100)};
+  });
+
+  // ── Chart helpers ──────────────────────────────────────────
+  const W=560, BAR_H=28, GAP=10, LABEL_W=160, CHART_W=W-LABEL_W-60;
+  const stageColors={planning:'#2563EB',active:'#0D7A4E',review:'#B45309',blocked:'#B91C1C',done:'#065F46'};
+
+  // ── SVG 1: Timeline planned vs elapsed ────────────────────
+  const maxDays=Math.max(...timelineData.map(d=>Math.max(d.planned,d.elapsed)),1);
+  let svg1=`<svg viewBox="0 0 ${W} ${timelineData.length*(BAR_H*2+GAP)+60}" xmlns="http://www.w3.org/2000/svg" style="width:100%;font-family:'Newsreader',serif">
+    <text x="0" y="18" font-size="13" font-weight="600" fill="#0F1E3C" font-family="'DM Serif Display',serif">Planned vs Elapsed Days (Active Projects)</text>`;
+  timelineData.forEach((d,i)=>{
+    const y=30+i*(BAR_H*2+GAP);
+    const pw=Math.min(d.planned/maxDays*CHART_W,CHART_W);
+    const ew=d.elapsed>0?Math.min(d.elapsed/maxDays*CHART_W,CHART_W):0;
+    const late=d.elapsed>d.planned;
+    svg1+=`
+    <text x="${LABEL_W-8}" y="${y+BAR_H/2+4}" font-size="11" fill="#4A5568" text-anchor="end">${d.name}</text>
+    <rect x="${LABEL_W}" y="${y}" width="${pw}" height="${BAR_H-4}" fill="#DBEAFE" rx="3"/>
+    <text x="${LABEL_W+pw+4}" y="${y+BAR_H/2}" font-size="10" fill="#1D4ED8" dominant-baseline="middle">${d.planned}d planned</text>
+    ${d.elapsed>0?`<rect x="${LABEL_W}" y="${y+BAR_H}" width="${ew}" height="${BAR_H-4}" fill="${late?'#FCA5A5':'#6EE7B7'}" rx="3"/>
+    <text x="${LABEL_W+ew+4}" y="${y+BAR_H+BAR_H/2}" font-size="10" fill="${late?'#B91C1C':'#065F46'}" dominant-baseline="middle">${d.elapsed}d elapsed${late?' (over)':''}</text>`:''}`;
+  });
+  svg1+=`</svg>`;
+
+  // ── SVG 2: Weight per person ───────────────────────────────
+  const maxW2=Math.max(...weightByPerson.map(d=>d.totalWeight),1);
+  let svg2=`<svg viewBox="0 0 ${W} ${employees.length*(BAR_H+GAP)+50}" xmlns="http://www.w3.org/2000/svg" style="width:100%;font-family:'Newsreader',serif">
+    <text x="0" y="18" font-size="13" font-weight="600" fill="#0F1E3C" font-family="'DM Serif Display',serif">Project Weight Load per Team Member</text>`;
+  const wColors=['#6366F1','#0891B2','#059669','#D97706'];
+  weightByPerson.forEach((d,i)=>{
+    const y=30+i*(BAR_H+GAP);
+    const bw=d.totalWeight>0?d.totalWeight/maxW2*CHART_W:0;
+    svg2+=`
+    <text x="${LABEL_W-8}" y="${y+BAR_H/2+4}" font-size="12" fill="#0F1E3C" text-anchor="end" font-weight="500">${d.name}</text>
+    <rect x="${LABEL_W}" y="${y}" width="${CHART_W}" height="${BAR_H}" fill="#F0F4F9" rx="4"/>
+    <rect x="${LABEL_W}" y="${y}" width="${bw}" height="${BAR_H}" fill="${wColors[i]||'#6366F1'}" rx="4"/>
+    <text x="${LABEL_W+Math.max(bw,4)+6}" y="${y+BAR_H/2+4}" font-size="11" fill="#4A5568">${d.totalWeight} weight pts · ${d.count} project${d.count!==1?'s':''}</text>`;
+  });
+  svg2+=`</svg>`;
+
+  // ── SVG 3: Project status donut (fake with bars) ───────────
+  const total3=Object.values(stageCounts).reduce((s,v)=>s+v,0)||1;
+  const stageLabels={planning:'Planning',active:'Active',review:'Review',blocked:'Blocked',done:'Done'};
+  let svg3=`<svg viewBox="0 0 ${W} ${Object.keys(stageCounts).length*(BAR_H+GAP)+50}" xmlns="http://www.w3.org/2000/svg" style="width:100%;font-family:'Newsreader',serif">
+    <text x="0" y="18" font-size="13" font-weight="600" fill="#0F1E3C" font-family="'DM Serif Display',serif">Projects by Stage</text>`;
+  Object.entries(stageCounts).forEach(([stage,count],i)=>{
+    const y=30+i*(BAR_H+GAP);
+    const bw=count/total3*CHART_W;
+    svg3+=`
+    <text x="${LABEL_W-8}" y="${y+BAR_H/2+4}" font-size="12" fill="#0F1E3C" text-anchor="end">${stageLabels[stage]||stage}</text>
+    <rect x="${LABEL_W}" y="${y}" width="${CHART_W}" height="${BAR_H}" fill="#F0F4F9" rx="4"/>
+    <rect x="${LABEL_W}" y="${y}" width="${bw||2}" height="${BAR_H}" fill="${stageColors[stage]||'#888'}" rx="4"/>
+    <text x="${LABEL_W+Math.max(bw,4)+6}" y="${y+BAR_H/2+4}" font-size="12" fill="#4A5568" font-weight="500">${count} project${count!==1?'s':''}</text>`;
+  });
+  svg3+=`</svg>`;
+
+  // ── SVG 4: Task completion per project ─────────────────────
+  const maxT=Math.max(...taskData.map(d=>d.total),1);
+  let svg4 = taskData.length===0
+    ? '<p style="color:var(--text3);font-size:13px">No tasks linked to projects yet.</p>'
+    : `<svg viewBox="0 0 ${W} ${taskData.length*(BAR_H+GAP)+50}" xmlns="http://www.w3.org/2000/svg" style="width:100%;font-family:'Newsreader',serif">
+    <text x="0" y="18" font-size="13" font-weight="600" fill="#0F1E3C" font-family="'DM Serif Display',serif">Task Completion by Project</text>`;
+  if(taskData.length>0){
+    taskData.forEach((d,i)=>{
+      const y=30+i*(BAR_H+GAP);
+      const tw=d.total/maxT*CHART_W;
+      const dw=d.done/maxT*CHART_W;
+      svg4+=`
+      <text x="${LABEL_W-8}" y="${y+BAR_H/2+4}" font-size="11" fill="#0F1E3C" text-anchor="end">${d.name}</text>
+      <rect x="${LABEL_W}" y="${y}" width="${tw}" height="${BAR_H}" fill="#DBEAFE" rx="4"/>
+      <rect x="${LABEL_W}" y="${y}" width="${dw}" height="${BAR_H}" fill="#059669" rx="4"/>
+      <text x="${LABEL_W+tw+6}" y="${y+BAR_H/2+4}" font-size="11" fill="#4A5568">${d.done}/${d.total} done (${d.pct}%)</text>`;
+    });
+    svg4+=`</svg>`;
+  }
+
+  // ── Summary stat cards ─────────────────────────────────────
+  const totalTasks=tasks.length;
+  const doneTasks=tasks.filter(t=>t.status==='done').length;
+  const activeProjs=projects.filter(p=>p.stage==='active').length;
+  const blockedProjs=projects.filter(p=>p.stage==='blocked').length;
+  const avgWeight=projects.length?Math.round(projects.reduce((s,p)=>s+(p.weight||0),0)/projects.length*10)/10:0;
+
+  let h=`<div style="font-size:19px;font-weight:400;font-family:'DM Serif Display',serif;color:var(--navy);margin-bottom:1.25rem">Analytics</div>
+  <div class="stats-row" style="margin-bottom:1.5rem">
+    <div class="stat-card"><div class="stat-num" style="color:var(--accent)">${activeProjs}</div><div class="stat-label">Active projects</div></div>
+    <div class="stat-card"><div class="stat-num" style="color:var(--green)">${doneTasks}/${totalTasks}</div><div class="stat-label">Tasks complete</div></div>
+    <div class="stat-card"><div class="stat-num" style="color:var(--amber)">${blockedProjs}</div><div class="stat-label">Blocked</div></div>
+    <div class="stat-card"><div class="stat-num" style="color:var(--navy)">${avgWeight}</div><div class="stat-label">Avg project weight</div></div>
+  </div>
+  <div class="two-col" style="gap:16px">
+    <div class="card">${svg1}</div>
+    <div class="card">${svg2}</div>
+    <div class="card">${svg3}</div>
+    <div class="card">${svg4}</div>
+  </div>`;
+
+  // ── SVG 5: Requests by department
+  const intakeAll=getIntakeRequests();
+  const deptCounts={};
+  intakeAll.forEach(r=>{ deptCounts[r.dept]=(deptCounts[r.dept]||0)+1; });
+  const deptEntries=Object.entries(deptCounts).sort((a,b)=>b[1]-a[1]);
+  const maxD=Math.max(...deptEntries.map(d=>d[1]),1);
+  let svg5='';
+  if(deptEntries.length){
+    svg5=`<svg viewBox="0 0 ${W} ${deptEntries.length*(BAR_H+GAP)+50}" xmlns="http://www.w3.org/2000/svg" style="width:100%;font-family:'Newsreader',serif">
+      <text x="0" y="18" font-size="13" font-weight="600" fill="#0F1E3C" font-family="'DM Serif Display',serif">Requests by Department</text>`;
+    deptEntries.forEach(([dept,count],i)=>{
+      const y=30+i*(BAR_H+GAP);
+      const bw=count/maxD*CHART_W;
+      svg5+=`<text x="${LABEL_W-8}" y="${y+BAR_H/2+4}" font-size="12" fill="#0F1E3C" text-anchor="end">${dept}</text>
+        <rect x="${LABEL_W}" y="${y}" width="${CHART_W}" height="${BAR_H}" fill="#F0F4F9" rx="4"/>
+        <rect x="${LABEL_W}" y="${y}" width="${bw||2}" height="${BAR_H}" fill="#2563EB" rx="4"/>
+        <text x="${LABEL_W+Math.max(bw,4)+6}" y="${y+BAR_H/2+4}" font-size="12" fill="#4A5568">${count} request${count!==1?'s':''}</text>`;
+    });
+    svg5+=`</svg>`;
+  }
+
+  h+=`${deptEntries.length?`<div class="card" style="grid-column:1/-1">${svg5}</div>`:''}`;
+    mc(h);
+}
+
+document.querySelectorAll('.modal-overlay').forEach(o=>{o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('open');});});
+
+
+// ── KANBAN (project-based) ────────────────────────────────────
+// Projects as cards, draggable across stage columns.
+// Projects tab unchanged — Kanban is a separate visual view.
+
+let dragProjId = null;
+
+const KANBAN_COLS = [
+ { id:'planning', label:'Planning', dot:'#9C9A95' },
+ { id:'active', label:'In Progress', dot:'#7F77DD' },
+ { id:'review', label:'Review', dot:'#B06B0B' },
+ { id:'blocked', label:'Blocked', dot:'#C0392B' },
+ { id:'done', label:'Done', dot:'#1E7A52' },
+];
+
+function renderKanban(){
+ const isMgr = cu.role === 'manager';
+ const projects = getProjects();
+ const tasks = getTasks();
+ const meetings = getMeetings();
+ const stageColors = {planning:'#7F77DD',active:'#1E7A52',review:'#B06B0B',blocked:'#C0392B',done:'#0F6E56'};
+
+ let h = `
+ <div class="section-header" style="margin-bottom:1rem">
+ <div style="font-size:19px;font-weight:400;font-family:'DM Serif Display',serif;color:var(--navy)"> Kanban Board</div>
+ ${isMgr ? `<button class="btn-action" onclick="openProjModal()">+ Add project</button>` : ''}
+ </div>
+ <div class="kanban-board" id="kanban-board">`;
+
+ KANBAN_COLS.forEach(col => {
+ const colProjects = projects.filter(p => p.stage === col.id);
+ h += `
+ <div class="kanban-col kanban-col-${col.id}"
+ id="kcol-${col.id}"
+ ondragover="kDragOver(event,'${col.id}')"
+ ondragleave="kDragLeave(event,'${col.id}')"
+ ondrop="kDrop(event,'${col.id}')">
+ <div class="kanban-col-header">
+ <div class="kanban-col-title">
+ <span style="width:9px;height:9px;border-radius:50%;background:${col.dot};display:inline-block;flex-shrink:0"></span>
+ ${col.label}
+ </div>
+ <span class="kanban-count">${colProjects.length}</span>
+ </div>`;
+
+ if(!colProjects.length){
+ h += `<div class="kanban-empty">Drop projects here</div>`;
+ } else {
+ colProjects.forEach(p => {
+ const projTasks = tasks.filter(t => t.projectId === p.id);
+ const openTasks = projTasks.filter(t => t.status !== 'done');
+ const doneTasks = projTasks.filter(t => t.status === 'done');
+ const flagged = projTasks.filter(t => t.status === 'flagged');
+ const projMeetings = meetings.filter(m => m.projectId === p.id);
+ const fc = stageColors[p.stage] || '#888';
+
+ h += `
+ <div class="kanban-card"
+ id="kproj-${p.id}"
+ draggable="${isMgr}"
+ ondragstart="kDragStart(event,${p.id})"
+ ondragend="kDragEnd(event)"
+ style="${!isMgr?'cursor:default':''}">
+
+ <div class="kanban-card-title">${p.name}</div>
+ <div style="font-size:11px;color:var(--text2);margin-bottom:8px"> ${p.owner}</div>
+
+ <div style="height:4px;background:var(--border);border-radius:2px;margin-bottom:4px">
+ <div style="height:100%;width:${projPct(p.id)}%;background:${fc};border-radius:2px"></div>
+ </div>
+ <div style="font-size:11px;color:var(--text3);margin-bottom:8px">${projPct(p.id)}% complete</div>
+
+ <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:6px">
+ ${projTasks.length ? `<span class="kanban-stat-chip">${doneTasks.length}/${projTasks.length} tasks</span>` : ''}
+ ${flagged.length ? `<span class="kanban-stat-chip" style="background:var(--amber-light);color:var(--amber)">! ${flagged.length} flagged</span>` : ''}
+ ${projMeetings.length ? `<span class="kanban-stat-chip"> ${projMeetings.length} meeting${projMeetings.length!==1?'s':''}</span>` : ''}
+ </div>
+
+ ${p.notes ? `<div style="font-size:11px;color:var(--text3);line-height:1.5;padding-top:6px;border-top:1px solid var(--border)">${p.notes.length>80?p.notes.slice(0,80)+'…':p.notes}</div>` : ''}
+
+ ${openTasks.length ? `
+ <div style="margin-top:8px;padding-top:6px;border-top:1px solid var(--border)">
+ <div style="font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px">Open tasks</div>
+ ${openTasks.slice(0,3).map(t=>`
+ <div style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text2);padding:2px 0">
+ <span style="width:6px;height:6px;border-radius:50%;background:${t.status==='flagged'?'var(--amber)':'var(--purple)'};flex-shrink:0"></span>
+ <span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${t.title}</span>
+ </div>`).join('')}
+ ${openTasks.length>3?`<div style="font-size:11px;color:var(--text3);margin-top:2px">+${openTasks.length-3} more</div>`:''}
+ </div>` : ''}
+ </div>`;
+ });
+ }
+
+ if(isMgr){
+ h += `<button class="kanban-add-btn" onclick="openProjModalInStage('${col.id}')">+ Add here</button>`;
+ }
+
+ h += `</div>`;
+ });
+
+ h += `</div>
+ <div style="font-size:12px;color:var(--text3);margin-top:10px">
+ ${isMgr ? '💡 Drag project cards between columns to update their stage. Changes save instantly.' : '💡 View your projects by stage. Managers can move cards between stages.'}
+ </div>`;
+ mc(h);
+}
+
+// ── DRAG & DROP (projects) ────────────────────────────────────
+function kDragStart(e, projId){
+ if(cu.role !== 'manager') return;
+ dragProjId = projId;
+ e.dataTransfer.effectAllowed = 'move';
+ setTimeout(()=>{ const el=document.getElementById('kproj-'+projId); if(el) el.classList.add('dragging'); },0);
+}
+function kDragEnd(e){
+ if(dragProjId !== null){ const el=document.getElementById('kproj-'+dragProjId); if(el) el.classList.remove('dragging'); }
+ document.querySelectorAll('.kanban-col').forEach(c=>c.classList.remove('drag-over'));
+ dragProjId = null;
+}
+function kDragOver(e, colId){
+ if(cu.role !== 'manager') return;
+ e.preventDefault(); e.dataTransfer.dropEffect='move';
+ document.querySelectorAll('.kanban-col').forEach(c=>c.classList.remove('drag-over'));
+ const col=document.getElementById('kcol-'+colId); if(col) col.classList.add('drag-over');
+}
+function kDragLeave(e, colId){
+ const col=document.getElementById('kcol-'+colId);
+ if(col && !col.contains(e.relatedTarget)) col.classList.remove('drag-over');
+}
+function kDrop(e, colId){
+ e.preventDefault();
+ document.querySelectorAll('.kanban-col').forEach(c=>c.classList.remove('drag-over'));
+ if(dragProjId===null || cu.role!=='manager') return;
+ const projects=getProjects(), proj=projects.find(p=>p.id===dragProjId);
+ if(proj) proj.stage=colId;
+ saveProjects(projects); dragProjId=null; renderKanban();
+}
+function openProjModalInStage(stage){
+ openProjModal();
+ setTimeout(()=>{ document.getElementById('p-stage').value=stage; },50);
+}
+
+document.querySelectorAll('.modal-overlay').forEach(o=>{o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('open');});});
+checkIntakeForm();
+</script>
+</body>
+</html>
